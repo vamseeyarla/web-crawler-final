@@ -1,0 +1,28 @@
+Full name: Vamsee K. Yarlagadda
+SEAS login: vamsee
+
+Description of features implemented:
+HttpClient-- Class that takes URL and fetches the data for local system or from internet accordingly
+XPathEngine--Class that processes the XPaths and evaluates them against the document provided to check whether they confront to the supplied file or not.
+XPathServlet-Class that displays user the content to take inputs and also to display the results of the XPathEngine PRocess and also calls various classes for proper execution.
+XPathEngineTest-- Class used for testing XPathEngine against JUnit tests
+HttpClientTest-- Class used for testing HttpClient against JUnit tests
+AllTests-- Class used to invoke all the test classes.
+
+Extra credits claimed:
+  None
+
+List of source files included (consider using `find src | grep java`)
+  src/edu/upenn/cis/cis555/HttpClient.java
+  src/edu/upenn/cis/cis555/XPathEngine.java
+  src/edu/upenn/cis/cis555/XPathServlet.java
+  src/test/edu/upenn/cis/cis555/hw2/AllTests.java
+  src/test/edu/upenn/cis/cis555/hw2/HttpClientTest.java
+  src/test/edu/upenn/cis/cis555/hw2/XPathEngineTest.java
+  
+
+Outside sources used:
+  None
+
+Special instructions for building or running:
+  None
