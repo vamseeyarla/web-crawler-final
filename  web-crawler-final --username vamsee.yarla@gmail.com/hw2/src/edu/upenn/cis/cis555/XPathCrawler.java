@@ -37,7 +37,8 @@ public class XPathCrawler {
 			//URL PARSING
 			URL l=new URL(args[0]);
 			URL = args[0];
-			
+		
+			/*
 			//DIRECTORY PARSING
 			File f=new File(args[1]);
 			boolean status=f.isAbsolute();
@@ -55,6 +56,7 @@ public class XPathCrawler {
 					break;
 				}
 			}
+			*/
 			
 			Directory=args[1];
 						

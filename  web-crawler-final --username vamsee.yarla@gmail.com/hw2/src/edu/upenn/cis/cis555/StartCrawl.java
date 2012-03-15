@@ -28,17 +28,19 @@ XPathEngine engine;
 	
 	public void URLCrawl(String URL)
 	{
-		ArrayList<String> subURLs=new ArrayList<String>();
+		System.out.println("URL:     "+URL);
+		ArrayList<String> subURLs=null;
 		
 		HttpClient client=new HttpClient(URL);
 		ByteArrayOutputStream stream=client.fetchData();
-		
+		System.out.println("CON TYPE:    "+client.ConType);
 		String content=stream.toString();
 		//TODO MIGHT DO MD5 TO CHECK IF CONTENT IS ALREADY PARSED OR NOT.
-		
+		System.out.println("VAMSEE");
 		Document root=engine.createDOM(stream, client);
+		System.out.println("VAMSEE1");
 		boolean[] status=engine.evaluate(root);
-		
+		System.out.println("VAMSEE2");
 		if(status[0])
 		{
 			System.out.println("TRUE");
@@ -71,9 +73,18 @@ XPathEngine engine;
 				suburl=suburl.concat(String.valueOf(content.charAt(trackpos)));
 				trackpos++;
 			}
+			subURLs= new ArrayList<String>();
+			subURLs.add(suburl.trim());	
 			
-		subURLs.add(suburl.trim());	
-			
+		}
+		System.out.println(subURLs);
+		if(subURLs!=null)
+		{
+		for(int count=0;count<subURLs.size();count++)
+		{
+			System.out.println("URL:    "+ subURLs.get(count));
+			URLCrawl(subURLs.get(count));
+		}
 		}
 		
 		
