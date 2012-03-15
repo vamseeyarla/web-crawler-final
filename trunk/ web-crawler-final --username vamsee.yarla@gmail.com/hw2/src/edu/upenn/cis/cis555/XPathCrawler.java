@@ -83,6 +83,12 @@ public class XPathCrawler {
 		//START THE PROCESS OF CRAWLING
 		
 		start=false;
+		
+		String XPath="/html/body";
+		StartCrawl crawling= new StartCrawl(URL,XPath);
+		crawling.URLCrawl(URL);
+		
+		
 		}
 	}
 }
