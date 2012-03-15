@@ -125,16 +125,25 @@ public ByteArrayOutputStream fetchData()
 					
 					while((contentType=br.readLine()).indexOf("Content-Type:")==-1);
 					////System.out.println("ENTERED CONTENT-TYPE");
-					////System.out.println(URL+"     "+contentType);
+					System.out.println(URL+"     "+contentType);
 					String type=contentType.substring(contentType.indexOf(":")+1,contentType.length()).trim();
+					
 					if(type.indexOf("xml")!=-1 || type.indexOf("XML")!=-1)
 					{
 						ConType="XML";
 					}
+					/*
+					else if(type.indexOf("xhtml")!=-1 || type.indexOf("XHTML")!=-1)
+					{
+						ConType="XML";
+					}
+					*/
 					else if(type.indexOf("html")!=-1 || type.indexOf("HTML")!=-1)
 					{
+						System.out.println("VA1");
 						ConType="HTML";
 					}
+					System.out.println("VA2");
 					/*
 					while((contentLength=br.readLine()).indexOf("Content-Length")==-1);
 				
@@ -149,13 +158,43 @@ public ByteArrayOutputStream fetchData()
 					  outBytes.write(sb.toString().getBytes());
 					 */
 					int x;
-					while(!((x=br.read())==13 && (x=br.read())==10 && (x=br.read())==13 && (x=br.read())==10));
-			
+				
+					try{
+					do
+					{
+						int a=br.read();
+						int b=br.read();
+					   if((a==13 && b==13)||(a==10 && b==10))
+					   {
+						   break;
+					   }
+					   else if((a==13 && b==10) && (x=br.read())==13 && (x=br.read())==10)
+					   {
+						   break;
+					   }
+					}while(true);
+					//while(!((x=br.read())==13 && (x=br.read())==10 && (x=br.read())==13 && (x=br.read())==10));
+					}
+					catch(Exception e)
+					{
+						System.out.println("END OF STREAM REACHED");
+					}
+					
+					System.out.println("VA3");
 					outBytes=new ByteArrayOutputStream();
 					while((x=br.read())!=-1)
 					{
 						outBytes.write(x);
 					}
+					
+					System.out.println("krishna");
+					/*
+					System.out.println("INDEX:   "+outBytes.toString().indexOf("<!DOCTYPE"));
+					if(outBytes.toString().indexOf("<!DOCTYPE")<15)
+					{
+						ConType="XML";
+					}
+					*/
 					 br.close();
 					 out.close();
        			  	 socket.close();
@@ -178,7 +217,7 @@ public ByteArrayOutputStream fetchData()
 				}
 				
 			}
-		
+		return outBytes;
 	}
 	else
 	{

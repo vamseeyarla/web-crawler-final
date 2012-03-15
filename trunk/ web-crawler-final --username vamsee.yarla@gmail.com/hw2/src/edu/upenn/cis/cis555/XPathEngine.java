@@ -117,7 +117,7 @@ public class XPathEngine {
 		}
 		else if(client.ConType.equalsIgnoreCase("XML"))
 		{
-
+			System.out.println("XML");
 			DocumentBuilderFactory doc=null;
 			DocumentBuilder docBuilder=null;
 			Document docHead=null;
@@ -129,8 +129,9 @@ public class XPathEngine {
 		         docBuilder = doc.newDocumentBuilder();
 	    
 		ByteArrayInputStream stream=new ByteArrayInputStream(outStream.toByteArray());
-		
+		System.out.println("XML1");
 	        docHead = docBuilder.parse(stream);
+	        System.out.println("XML2");
 				}
 				catch(Exception e)
 				{
