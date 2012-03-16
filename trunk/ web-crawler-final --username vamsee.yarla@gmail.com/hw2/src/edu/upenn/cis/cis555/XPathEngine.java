@@ -150,6 +150,7 @@ public class XPathEngine {
 			
 			ByteArrayInputStream stream=new ByteArrayInputStream(outStream.toByteArray());
 			Tidy tidy=new Tidy();
+			
 			tidy.setTidyMark(false);
 			tidy.setShowWarnings(false);
 			docHead=tidy.parseDOM(stream, System.out);

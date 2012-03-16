@@ -33,11 +33,25 @@ XPathEngine engine;
 		
 		HttpClient client=new HttpClient(URL);
 		ByteArrayOutputStream stream=client.fetchData();
+		
+		if(stream==null)
+		{
+			System.out.println("PROBLEM WITH URL OR NULL URL");
+			return;
+		}
+		
 		System.out.println("CON TYPE:    "+client.ConType);
 		String content=stream.toString();
 		//TODO MIGHT DO MD5 TO CHECK IF CONTENT IS ALREADY PARSED OR NOT.
 		System.out.println("VAMSEE");
 		Document root=engine.createDOM(stream, client);
+		
+		if(root==null)
+		{
+			System.out.println("PROBLEM WITH ROOT");
+			return;
+		}
+		
 		System.out.println("VAMSEE1");
 		boolean[] status=engine.evaluate(root);
 		System.out.println("VAMSEE2");
@@ -53,7 +67,15 @@ XPathEngine engine;
 		
 		int CurPos=0;
 		int pos;
-		while((pos=content.indexOf("href", CurPos))!=-1)
+		
+		System.out.println("YAHOOOOOOOOOOOOOOOOOOOOOO");
+		//System.out.println(content);
+		if(((pos=content.indexOf("href", CurPos))!=-1) || ((pos=content.indexOf("HREF", CurPos))!=-1) )
+		{
+		subURLs= new ArrayList<String>();
+		}
+		
+		while(((pos=content.indexOf("href", CurPos))!=-1) || ((pos=content.indexOf("HREF", CurPos))!=-1))
 		{
 			pos=pos+4;
 			int subpos; //This is for finding where is "="
@@ -73,11 +95,31 @@ XPathEngine engine;
 				suburl=suburl.concat(String.valueOf(content.charAt(trackpos)));
 				trackpos++;
 			}
-			subURLs= new ArrayList<String>();
-			subURLs.add(suburl.trim());	
+			suburl=suburl.trim();
 			
+			if(suburl.indexOf("http")==0||suburl.indexOf("HTTP")==0)
+			{
+				subURLs.add(suburl);	
+			}
+			else
+			{
+				System.out.println("YAHOO");
+				if(client.Link.equalsIgnoreCase("/"))
+				{
+				subURLs.add("http://".concat(client.Hostname).concat("/").concat(suburl));
+				}
+				else
+				{
+				subURLs.add("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));	
+				}
+			}
+			
+			CurPos=pos+1;
 		}
+		System.out.println("GMAIl");
 		System.out.println(subURLs);
+		System.out.println("GMAIL@");
+		
 		if(subURLs!=null)
 		{
 		for(int count=0;count<subURLs.size();count++)
