@@ -14,6 +14,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+
 /**
  * @author VamseeKYarlagadda
  *
@@ -21,6 +23,8 @@ import java.net.Socket;
 public class HttpClient {
 	String URL;
 	ByteArrayOutputStream outBytes;
+	public String Hostname;
+	public String Link;
 	public String ConType=null;
 	
 	/*
@@ -48,6 +52,7 @@ public HttpClient(String url)
 
 public ByteArrayOutputStream fetchData()
 {
+	System.out.println("URL in FETCHDATA:  "+URL);
 	if(URL=="" || URL==null)
 	{
 		outBytes=null;
@@ -95,6 +100,7 @@ public ByteArrayOutputStream fetchData()
 				//
 				// Send a message to the client application
 				//
+				
 				OutputStream out=(socket.getOutputStream());
 				out.write(("GET "+request+" HTTP/1.0\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
@@ -103,16 +109,27 @@ public ByteArrayOutputStream fetchData()
 				out.write(("Accept-Language: en-us\n\n").getBytes());
 				
 				
+				Hostname=address;
 				
-				
+				if(request.equalsIgnoreCase("/"))
+				{
+					Link="/";
+				}
+				else if(request.charAt(request.length()-1)=='/')
+				{
+					request=request.substring(0,request.length()-1);
+				}
+				Link=request;
+				System.out.println("TRACK1");
 				
 				
 				int Length=0;
 				BufferedReader br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 				String firstHead=br.readLine();
-				if(firstHead.indexOf("404")!=-1 || firstHead.indexOf("500")!=-1)
+				if(firstHead.indexOf("404")!=-1 || firstHead.indexOf("500")!=-1 || firstHead.indexOf("301")!=-1 || firstHead.indexOf("403")!=-1)
 				{
+					System.out.println("TRACK2");
 					////System.out.println("SERVER ERROR AT REMOTE LOCATION");
 					outBytes=new ByteArrayOutputStream();
 					outBytes.write("404".getBytes());
@@ -120,6 +137,7 @@ public ByteArrayOutputStream fetchData()
 				}
 				else
 				{
+					System.out.println("TRACK3");
 					//String contentLength=null;
 					String contentType=null;
 					
@@ -130,6 +148,7 @@ public ByteArrayOutputStream fetchData()
 					
 					if(type.indexOf("xml")!=-1 || type.indexOf("XML")!=-1)
 					{
+						System.out.println("VA0");
 						ConType="XML";
 					}
 					/*
@@ -159,6 +178,8 @@ public ByteArrayOutputStream fetchData()
 					 */
 					int x;
 				
+					while(!br.readLine().equalsIgnoreCase(""));
+					/*
 					try{
 					do
 					{
@@ -179,6 +200,9 @@ public ByteArrayOutputStream fetchData()
 					{
 						System.out.println("END OF STREAM REACHED");
 					}
+					*/
+					
+					
 					
 					System.out.println("VA3");
 					outBytes=new ByteArrayOutputStream();
@@ -217,7 +241,8 @@ public ByteArrayOutputStream fetchData()
 				}
 				
 			}
-		return outBytes;
+			
+			return outBytes;
 	}
 	else
 	{
