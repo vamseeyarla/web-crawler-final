@@ -13,6 +13,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
@@ -26,7 +28,9 @@ public class HttpClient {
 	public String Hostname;
 	public String Link;
 	public String ConType=null;
-	
+	public String ConLength=null;
+	public String useragent="WebCrawler";
+	Hashtable<String,ArrayList<String>> robots=null;
 	/*
 	 * Constructor of HttpClient that takes a string which contains URL and saves it
 	 * in one of the global variables.
@@ -92,21 +96,287 @@ public ByteArrayOutputStream fetchData()
 				//
 				// Create a connection to the server socket on the server application
 				//
+				Socket socket=null;
+				OutputStream  out=null;
+				BufferedReader br = null;
+				
 				try{
 					address=address.substring(7,address.length());
 				InetAddress host = InetAddress.getByName(address);
-				Socket socket = new Socket (host.getHostAddress(), Integer.parseInt(port));
+				socket = new Socket (host.getHostAddress(), Integer.parseInt(port));
+				
+				out=(socket.getOutputStream());
+				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
+				
+				
+				/*
+				 * Check for the status of the Robots.txt file
+				 */
+							
+				out.write(("GET "+"/robots.txt"+" HTTP/1.0\n").getBytes());
+				out.write(("User-Agent: "+useragent+"\n").getBytes());
+				out.write(("Host: "+address+"\n\n").getBytes());
+				
+				out.flush();	
+				
+				String firstHeadRobot=br.readLine();
+				if(firstHeadRobot.indexOf("404")!=-1 || firstHeadRobot.indexOf("500")!=-1)
+				{
+					System.out.println("NO ROBOTS");
+					//NO ROBOTS.TXT AT SERVER
+					
+				}
+				else
+				{
+					robots=new Hashtable<String,ArrayList<String>>();
+					
+					while(!br.readLine().equalsIgnoreCase(""));
+					
+				String presentLine=null;
+				String UserAgent=null;
+				while((presentLine=br.readLine())!=null)
+				{
+					presentLine=presentLine.trim();
+					
+					if(presentLine.length()>11 && presentLine.substring(0,10).equalsIgnoreCase("User-agent"))
+					{
+						try{
+						String[] split=presentLine.split(":");
+							if(split.length<2)
+							{
+							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							robots=null;
+							break;
+							}
+						split[1]=split[1].trim();
+						UserAgent=split[1];
+						System.out.println("User-Agent: #"+split[1]);
+						ArrayList<String> data=new ArrayList<String>();
+						robots.put(split[1],data);
+						}
+						catch(Exception e)
+						{
+							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							robots=null;
+							break;
+						}
+					 }
+					
+					if(presentLine.length()>8 && presentLine.substring(0,8).equalsIgnoreCase("Disallow"))
+					{
+						try{
+						String[] split=presentLine.split(":");
+							if(split.length<2)
+							{
+								/*
+								 * ALL ACCESS TO FILES
+								 */
+								
+								split=new String[2];
+								split[0]="Disallow";
+								split[1]="ALL";
+								
+								/*
+							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							robots=null;
+							break;
+							*/
+							}
+						split[1]=split[1].trim();
+						if(split[1].equalsIgnoreCase(""))
+						{
+							split[1]="ALL";
+						}
+						if(UserAgent==null)
+						{
+							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							robots=null;
+							break;
+						}
+						
+						if(split[1].indexOf("#")!=-1)
+						{
+							split[1]=split[1].substring(0,split[1].indexOf("#")).trim();
+						}
+						System.out.println("Disallow: #"+split[1]);
+						ArrayList<String> set=robots.get(UserAgent);
+						set.add(split[1]);
+						robots.put(UserAgent, set);
+						
+						}
+						catch(Exception e)
+						{
+							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							robots=null;
+							break;
+						}
+					 }
+					
+				}
+					
+				}
+				br.close();
+				out.close();
+				socket.close();
+				
+				//CHECK WHETHER THE REQUEST IS IN COMPLAINCE WITH ROBOTS.TXT
+				
+				if(robots!=null)
+				{
+					ArrayList<String> list=robots.get(useragent);
+					if(list==null)
+					{
+						list=robots.get("*");						
+					}
+					
+					if(list!=null)
+					{
+						
+						if(!list.contains("ALL"))
+						{
+						for(int i=0;i<list.size();i++)
+						{
+							if(request.indexOf(list.get(i))==0)
+							{
+								return null;
+							}
+						}
+						}
+					}
+				}
+					System.out.println("CLEARED ROBOTS");
+					
+				/*
+				 * SEND HEAD REQ's TO CHECK THE INCOMING FORMAT!!
+				 */
+				host = InetAddress.getByName(address);
+				socket = new Socket (host.getHostAddress(), Integer.parseInt(port));
+				
+				out=(socket.getOutputStream());
+				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
+				
+				out.write(("HEAD "+request+" HTTP/1.0\n").getBytes());
+				out.write(("User-Agent: "+useragent+"\n").getBytes());
+				out.write(("Host: "+address+"\n\n").getBytes());
+			
+				
+				
+				String firstHeadHEAD=br.readLine();
+				System.out.println(firstHeadHEAD);
+				if(firstHeadHEAD.indexOf("404")!=-1 || firstHeadHEAD.indexOf("500")!=-1 || firstHeadHEAD.indexOf("301")!=-1 || firstHeadHEAD.indexOf("403")!=-1)
+				{
+					System.out.println("TRACK2");
+					////System.out.println("SERVER ERROR AT REMOTE LOCATION");
+					/*
+					outBytes=new ByteArrayOutputStream();
+					outBytes.write("404".getBytes());
+					return outBytes;
+					*/
+					return null;
+				}
+				else
+				{
+					System.out.println("TRACK3");
+					//String contentLength=null;
+					String contentType=null;
+					String contentLength=null;
+					String temp;
+					while((temp=br.readLine())!=null)
+					{
+						if(temp.indexOf("Content-Type:")!=-1)
+						{
+							contentType=temp;
+						}
+						else if(temp.indexOf("Content-Length:")!=-1)
+						{
+							contentLength=temp;
+						}
+						
+					}
+					
+					if(contentType!=null && contentLength!=null)
+					{
+					    if(contentType.indexOf("Content-Type:")!=-1)
+					    {
+					////System.out.println("ENTERED CONTENT-TYPE");
+					System.out.println(URL+"     "+contentType);
+					String type=contentType.substring(contentType.indexOf(":")+1,contentType.length()).trim();
+					
+					if(type.indexOf("xml")!=-1 || type.indexOf("XML")!=-1)
+					{
+						System.out.println("VA0");
+						ConType="XML";
+						
+					}
+					/*
+					else if(type.indexOf("xhtml")!=-1 || type.indexOf("XHTML")!=-1)
+					{
+						ConType="XML";
+					}
+					*/
+					else if(type.indexOf("html")!=-1 || type.indexOf("HTML")!=-1)
+					{
+						System.out.println("VA1");
+						ConType="HTML";
+						
+					}
+					else
+					{
+						/*
+						 * Illegal MIME Type Document
+						 * It is other than XML and HTML
+						 */
+						return null;
+					}
+					
+					    }
+					    else  if(contentLength.indexOf("Content-Length:")!=-1)
+					    {
+					    	String length=contentLength.substring(contentLength.indexOf(":")+1,contentLength.length()).trim();
+							ConLength=length;
+					    }
+					}
+					else
+					{
+						
+							/*
+							 * There is no content type or content Length attribute in response headers.
+							 * Illegal headers!!!
+							 */
+							return null;
+						
+					}
+					
+				
+				}
+	
+				br.close();
+				out.close();
+				socket.close();
+				
 				
 				//
 				// Send a message to the client application
 				//
+				host = InetAddress.getByName(address);
+				socket = new Socket (host.getHostAddress(), Integer.parseInt(port));
 				
-				OutputStream out=(socket.getOutputStream());
+				out=(socket.getOutputStream());
+				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
+			
+				
+				
 				out.write(("GET "+request+" HTTP/1.0\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
-				out.write(("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\n").getBytes());
-				out.write(("Accept-Encoding: gzip, deflate\n").getBytes());
-				out.write(("Accept-Language: en-us\n\n").getBytes());
+				out.write(("User-Agent: "+useragent+"\n\n").getBytes());
+				
+				
+			//	out.write(("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\n").getBytes());
+			//	out.write(("Accept-Encoding: gzip, deflate\n").getBytes());
+			//	out.write(("Accept-Language: en-us\n\n").getBytes());
 				
 				
 				Hostname=address;
@@ -123,46 +393,10 @@ public ByteArrayOutputStream fetchData()
 				System.out.println("TRACK1");
 				
 				
-				int Length=0;
-				BufferedReader br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				
+			
+									
 				String firstHead=br.readLine();
-				if(firstHead.indexOf("404")!=-1 || firstHead.indexOf("500")!=-1 || firstHead.indexOf("301")!=-1 || firstHead.indexOf("403")!=-1)
-				{
-					System.out.println("TRACK2");
-					////System.out.println("SERVER ERROR AT REMOTE LOCATION");
-					outBytes=new ByteArrayOutputStream();
-					outBytes.write("404".getBytes());
-					return outBytes;
-				}
-				else
-				{
-					System.out.println("TRACK3");
-					//String contentLength=null;
-					String contentType=null;
-					
-					while((contentType=br.readLine()).indexOf("Content-Type:")==-1);
-					////System.out.println("ENTERED CONTENT-TYPE");
-					System.out.println(URL+"     "+contentType);
-					String type=contentType.substring(contentType.indexOf(":")+1,contentType.length()).trim();
-					
-					if(type.indexOf("xml")!=-1 || type.indexOf("XML")!=-1)
-					{
-						System.out.println("VA0");
-						ConType="XML";
-					}
-					/*
-					else if(type.indexOf("xhtml")!=-1 || type.indexOf("XHTML")!=-1)
-					{
-						ConType="XML";
-					}
-					*/
-					else if(type.indexOf("html")!=-1 || type.indexOf("HTML")!=-1)
-					{
-						System.out.println("VA1");
-						ConType="HTML";
-					}
-					System.out.println("VA2");
+			
 					/*
 					while((contentLength=br.readLine()).indexOf("Content-Length")==-1);
 				
@@ -179,6 +413,7 @@ public ByteArrayOutputStream fetchData()
 					int x;
 				
 					while(!br.readLine().equalsIgnoreCase(""));
+					
 					/*
 					try{
 					do
@@ -219,16 +454,11 @@ public ByteArrayOutputStream fetchData()
 						ConType="XML";
 					}
 					*/
-					 br.close();
-					 out.close();
-       			  	 socket.close();
-       			  	
-       			  	
-       			  	 
-       		      	
+					
+       			  
 					
 					
-				}
+				
 				
 				
 				
@@ -239,8 +469,23 @@ public ByteArrayOutputStream fetchData()
 					e.printStackTrace();
 					return null;		
 				}
+				finally
+				{
+					try{
+					 br.close();
+					 out.close();
+       			  	 socket.close(); 
+					}
+					catch(Exception e)
+					{
+						
+					}
+				}
+				
 				
 			}
+			
+	
 			
 			return outBytes;
 	}
