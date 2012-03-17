@@ -17,6 +17,7 @@ String URL;
 String XPath;
 XPathEngine engine;
 int MaxSize;
+ArrayList<String> subURLs=null;
 	
 	StartCrawl(String URL, String XPath, int MaxSize)
 	{
@@ -26,12 +27,13 @@ int MaxSize;
 		String[] XPaths=new String[1];
 		XPaths[0]=this.XPath;
 		engine=new XPathEngine(XPaths);
+		subURLs=new ArrayList<String>();
 	}
 	
 	public void URLCrawl(String URL)
 	{
 		System.out.println("URL:     "+URL);
-		ArrayList<String> subURLs=null;
+		
 		
 		HttpClient client=new HttpClient(URL,MaxSize);
 		ByteArrayOutputStream stream=client.fetchData();
@@ -72,11 +74,12 @@ int MaxSize;
 		
 		System.out.println("YAHOOOOOOOOOOOOOOOOOOOOOO");
 		//System.out.println(content);
+		/*
 		if(((pos=content.indexOf("href", CurPos))!=-1) || ((pos=content.indexOf("HREF", CurPos))!=-1) )
 		{
 		subURLs= new ArrayList<String>();
 		}
-		
+		*/
 		while(((pos=content.indexOf("href", CurPos))!=-1) || ((pos=content.indexOf("HREF", CurPos))!=-1))
 		{
 			pos=pos+4;
@@ -101,6 +104,7 @@ int MaxSize;
 			
 			if(suburl.indexOf("http")==0||suburl.indexOf("HTTP")==0)
 			{
+				//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
 				subURLs.add(suburl);	
 			}
 			else
@@ -108,10 +112,12 @@ int MaxSize;
 				System.out.println("YAHOO");
 				if(client.Link.equalsIgnoreCase("/"))
 				{
+					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
 				subURLs.add("http://".concat(client.Hostname).concat("/").concat(suburl));
 				}
 				else
 				{
+					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
 				subURLs.add("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));	
 				}
 			}
@@ -122,6 +128,7 @@ int MaxSize;
 		System.out.println(subURLs);
 		System.out.println("GMAIL@");
 		
+		/*
 		if(subURLs!=null)
 		{
 		for(int count=0;count<subURLs.size();count++)
@@ -129,6 +136,12 @@ int MaxSize;
 			System.out.println("URL:    "+ subURLs.get(count));
 			URLCrawl(subURLs.get(count));
 		}
+		}
+		*/
+		
+		if(subURLs.size()!=0)
+		{
+			URLCrawl(subURLs.remove(0));
 		}
 		
 		
