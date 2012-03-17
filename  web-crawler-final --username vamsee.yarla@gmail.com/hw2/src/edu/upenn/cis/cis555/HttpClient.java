@@ -348,8 +348,7 @@ public ByteArrayOutputStream fetchData()
 							{
 							  
 								if(MaxSize < Integer.parseInt(ConLength))
-								{
-									
+								{					
 									/*
 									 * Huge File Size
 									 * 
