@@ -87,7 +87,7 @@ public class XPathCrawler {
 		start=false;
 		
 		String XPath="/html/body";
-		StartCrawl crawling= new StartCrawl(URL,XPath);
+		StartCrawl crawling= new StartCrawl(URL,XPath,MaxSize);
 		crawling.URLCrawl(URL);
 		
 		

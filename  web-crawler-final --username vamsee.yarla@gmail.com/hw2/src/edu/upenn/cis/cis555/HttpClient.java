@@ -31,6 +31,7 @@ public class HttpClient {
 	public String ConLength=null;
 	public String useragent="WebCrawler";
 	Hashtable<String,ArrayList<String>> robots=null;
+	int MaxSize=-1;
 	/*
 	 * Constructor of HttpClient that takes a string which contains URL and saves it
 	 * in one of the global variables.
@@ -38,6 +39,12 @@ public class HttpClient {
 public HttpClient(String url)
 {
 	URL=url;
+}
+
+public HttpClient(String URL,int MaxSize)
+{
+	this.URL=URL;
+	this.MaxSize=MaxSize;
 }
 
 /*
@@ -332,10 +339,24 @@ public ByteArrayOutputStream fetchData()
 					}
 					
 					    }
-					    else  if(contentLength.indexOf("Content-Length:")!=-1)
+					    if(contentLength.indexOf("Content-Length:")!=-1)
 					    {
 					    	String length=contentLength.substring(contentLength.indexOf(":")+1,contentLength.length()).trim();
 							ConLength=length;
+							
+							if(MaxSize!=-1)
+							{
+							  
+								if(MaxSize < Integer.parseInt(ConLength))
+								{
+									
+									/*
+									 * Huge File Size
+									 * 
+									 */
+									return null;
+								}
+							}
 					    }
 					}
 					else

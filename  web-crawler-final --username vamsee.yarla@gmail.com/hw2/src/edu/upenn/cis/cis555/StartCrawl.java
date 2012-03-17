@@ -16,11 +16,13 @@ public class StartCrawl {
 String URL;
 String XPath;
 XPathEngine engine;
+int MaxSize;
 	
-	StartCrawl(String URL, String XPath)
+	StartCrawl(String URL, String XPath, int MaxSize)
 	{
 		this.URL=URL;
 		this.XPath=XPath;
+		this.MaxSize=MaxSize;
 		String[] XPaths=new String[1];
 		XPaths[0]=this.XPath;
 		engine=new XPathEngine(XPaths);
@@ -31,7 +33,7 @@ XPathEngine engine;
 		System.out.println("URL:     "+URL);
 		ArrayList<String> subURLs=null;
 		
-		HttpClient client=new HttpClient(URL);
+		HttpClient client=new HttpClient(URL,MaxSize);
 		ByteArrayOutputStream stream=client.fetchData();
 		
 		if(stream==null)
