@@ -130,6 +130,9 @@ public class XPathEngine {
 	    
 		ByteArrayInputStream stream=new ByteArrayInputStream(outStream.toByteArray());
 		System.out.println("XML1");
+		
+		//System.out.println(outStream.toString());
+		
 	        docHead = docBuilder.parse(stream);
 	        System.out.println("XML2");
 				}
