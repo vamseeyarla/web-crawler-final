@@ -32,6 +32,8 @@ ArrayList<String> subURLs=null;
 	
 	public void URLCrawl(String URL)
 	{
+		boolean state=true;
+
 		System.out.println("URL:     "+URL);
 		
 		
@@ -40,9 +42,14 @@ ArrayList<String> subURLs=null;
 		
 		if(stream==null)
 		{
-			System.out.println("PROBLEM WITH URL OR NULL URL");
-			return;
+			System.out.println("PROBLEM WITH URL OR NULL URL FROM HTTP CLIENT");
+			state=false;
+		//	return;
 		}
+		
+		while(state)
+		{
+			
 		
 		System.out.println("CON TYPE:    "+client.ConType);
 		String content=stream.toString();
@@ -52,8 +59,8 @@ ArrayList<String> subURLs=null;
 		
 		if(root==null)
 		{
-			System.out.println("PROBLEM WITH ROOT");
-			return;
+			System.out.println("PROBLEM WITH ROOT FROM XPathCRAWLER");
+			break;
 		}
 		
 		System.out.println("VAMSEE1");
@@ -128,6 +135,10 @@ ArrayList<String> subURLs=null;
 		System.out.println(subURLs);
 		System.out.println("GMAIL@");
 		
+		state=false;
+		
+		
+		}
 		/*
 		if(subURLs!=null)
 		{
