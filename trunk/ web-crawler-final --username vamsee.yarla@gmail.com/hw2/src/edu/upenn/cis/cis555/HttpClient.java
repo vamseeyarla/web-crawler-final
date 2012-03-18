@@ -29,7 +29,8 @@ public class HttpClient {
 	public String Link;
 	public String ConType=null;
 	public String ConLength=null;
-	public String useragent="WebCrawler";
+	//public String useragent="WebCrawler";
+	public String useragent="cis455crawler1";
 	Hashtable<String,ArrayList<String>> robots=null;
 	int MaxSize=-1;
 	/*
@@ -159,8 +160,12 @@ public ByteArrayOutputStream fetchData()
 						split[1]=split[1].trim();
 						UserAgent=split[1];
 						System.out.println("User-Agent: #"+split[1]);
+						if(!robots.containsKey(split[1]))
+						{
 						ArrayList<String> data=new ArrayList<String>();
 						robots.put(split[1],data);
+						}
+						
 						}
 						catch(Exception e)
 						{
@@ -219,6 +224,8 @@ public ByteArrayOutputStream fetchData()
 							break;
 						}
 					 }
+					
+					//TODO: Write code for Crawl-delay
 					
 				}
 					
@@ -355,6 +362,8 @@ public ByteArrayOutputStream fetchData()
 									 */
 									return null;
 								}
+								System.out.println("CONTENT LENGTH: "+ConLength);
+								System.out.println("PASSED CONTENT LENGTH");
 							}
 					    }
 					}
