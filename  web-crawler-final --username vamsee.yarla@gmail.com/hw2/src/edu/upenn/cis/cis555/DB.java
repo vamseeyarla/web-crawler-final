@@ -1,8 +1,6 @@
 package edu.upenn.cis.cis555;
 
-import java.awt.image.DataBufferShort;
 import java.io.File;
-
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.persist.EntityStore;
@@ -11,13 +9,22 @@ import com.sleepycat.persist.StoreConfig;
 
 public class DB {
 
+	public String Directory;
+	EntityStore storeUserDetails;
+	EntityStore storeChannels;
+	PrimaryIndex <String, UserData> UserIndex;
+	PrimaryIndex <String, ChannelData> ChannelIndex;
 	
-	public static void main(String[] args)
+	public DB(String Directory)
 	{
-		EntityStore store;
-		PrimaryIndex<String, UserData> index;
 		
-		File dir = new File("JEDB");
+		this.Directory=Directory;
+					
+	}
+	
+	public boolean init()
+	{
+		File dir = new File(Directory);
 		boolean success=dir.mkdirs();
 		if(success)
 		{
@@ -28,7 +35,7 @@ public class DB {
 			System.out.println("Cannot Create the DB Directory");
 			
 		}
-		
+		try{
 		
 		EnvironmentConfig envConfig=new EnvironmentConfig();
 		StoreConfig storeConfig=new StoreConfig();
@@ -37,33 +44,42 @@ public class DB {
 		
 		Environment env = new Environment(dir, envConfig);
 		
-		store=new EntityStore(env, "CIS555", storeConfig);
+		storeUserDetails=new EntityStore(env, "Users", storeConfig);
+		storeChannels=new EntityStore(env, "Channels", storeConfig);
 		
-		index=store.getPrimaryIndex(String.class, UserData.class);
+		UserIndex=storeUserDetails.getPrimaryIndex(String.class, UserData.class);
 		
+		ChannelIndex=storeChannels.getPrimaryIndex(String.class, ChannelData.class);
 		
+		DBClose closingHook=new DBClose(env, storeUserDetails);
+		Runtime.getRuntime().addShutdownHook(closingHook);
+		return true;
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error in Connecting to Berkeley DB");
+			return false;
+		}
+		
+		/*
 		
 		String[] temp={"hi","Kri"};
 		UserData x=new UserData("vamsee","krish",temp);
 		
 		UserData y=new UserData("manoj","krishna yarlagadda",temp);
-		index.put(y);
-		index.put(x);
+		UserIndex.put(y);
+		ChannelIndex.put(x);
 	
-	
-	index.delete("manoj");
+		UserIndex.delete("manoj");
+		ChannelIndex.delete("vamsee");
 		
-		UserData result=index.get("manoj");
+		UserData result=UserIndex.get("manoj");
 		
 		System.out.println(result.Password);
-		
-	
-		DBClose closingHook=new DBClose(env, store);
-		Runtime.getRuntime().addShutdownHook(closingHook);
-			
+		result=ChannelIndex.get("vamsee");
+		System.out.println(result.Password);
+	*/	
 	}
-	
-	
 	
 	
 }
