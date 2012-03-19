@@ -1631,6 +1631,8 @@ public class HandleReq {
 				 servlet.service(request, response);
 				 System.out.println("AFTER PROCESS");
 				 
+				 System.out.println("SSESSIONSTATUS:  "+request.sessionStatus);
+				 System.out.println("HAS SESSION:    "+request.hasSession());
 				if(request.sessionStatus && request.hasSession())
 				{
 					
@@ -2246,15 +2248,20 @@ public class HandleReq {
         					 if(fs.t!=null)
         					 {
         					 fs.t.interrupt();
+        					 System.out.println("Thread going to refresh");
         					 fs.refreshThread();
+        					 System.out.println("Refresh done");
         					 }
         					 }
     						
     						req.PutSession(fs, true);
     						req.isSessionFCoookie=true;
-    						
+    						System.out.println("RequestSESS:  "+fs.sessionID);
     					}
+    					else
+    					{
     					req.setAttribute(KeyValue[0].trim(), KeyValue[1].trim());
+    					}
     				}
     			}
     			else
@@ -2270,12 +2277,16 @@ public class HandleReq {
     					 if(fs.t!=null)
     					 {
     					 fs.t.interrupt();
+    					 System.out.println("Thread going to refresh");
     					 fs.refreshThread();
+    					 System.out.println("Refresh done");
     					 }
     					 }
     					
 						 req.PutSession(fs, true);
 						 req.isSessionFCoookie=true;
+							System.out.println("RequestSESS:  "+fs.sessionID);
+							System.out.println("IS Session PRESENT:  "+sessions.containsKey(fs.sessionID));
 					}
     				else{
 					//fs.setAttribute(KeyValue[0].trim(), KeyValue[1].trim());
