@@ -59,7 +59,14 @@ public class XPathCrawler {
 			*/
 			
 			Directory=args[1];
-						
+			Directory="JEDB";
+			DB db=new DB(Directory);
+			if(!db.init())
+			{
+				System.out.println("PROGRAM TERMINATED!");
+				break;
+			}
+			
 			//MAXIMUM SIZE OF FILE
 			MaxSize=Integer.parseInt(args[2]);
 			
