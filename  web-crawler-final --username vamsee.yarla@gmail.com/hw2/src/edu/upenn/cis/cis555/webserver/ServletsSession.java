@@ -92,6 +92,7 @@ class ServletsSession implements HttpSession {
 		 t=new Thread(new SessionHandler(inactiveInterval, getId()));
 		 t.start();
 		 threadRun=true;
+		 HandleReq.sessions.put(getId(), this);
 		}
 	}
 	
@@ -160,7 +161,7 @@ Actions that your application takes, such as getting or setting a value associat
 			 t=new Thread(new SessionHandler(inactiveInterval, getId()));
  		     t.start();
  		     threadRun=true;
- 			
+ 		     HandleReq.sessions.put(getId(), this);
  			 sessionAccess.put(getId(), System.currentTimeMillis());
      		
 		}

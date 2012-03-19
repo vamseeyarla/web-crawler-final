@@ -21,16 +21,17 @@ public class SessionHandler implements Runnable{
 	
 	
 	public void run() {
-	//	System.out.println("VAMSEE");
+		System.out.println("ENTERED RUN");
 		try {
 			
 			Thread.sleep(time);
+			System.out.println("THREAD DIDED");
+			HandleReq.sessions.remove(session);
+			
 		} catch (InterruptedException e) {
 			logger.error(e.toString());
 		//	e.printStackTrace();
 		}
-	//	System.out.println("THREAD DIDED");
-		HandleReq.sessions.remove(session);
 		
 	}
 

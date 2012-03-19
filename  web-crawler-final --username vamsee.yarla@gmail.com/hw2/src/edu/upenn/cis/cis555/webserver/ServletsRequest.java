@@ -435,10 +435,14 @@ This method will return an empty string ("") if the servlet used to process this
 	public HttpSession getSession() {
 		if(m_session!=null)
 		{
+			System.out.println("first block");
+			System.out.println(m_session.sessionID);
+			sessionStatus=true;
 		return m_session;
 		}
 		else
 		{
+			System.out.println("second block");
 		m_session=new ServletsSession(Servlet);
 		sessionStatus=true;
 		return m_session;
