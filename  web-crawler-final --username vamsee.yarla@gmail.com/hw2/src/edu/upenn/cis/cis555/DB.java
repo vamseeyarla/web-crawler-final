@@ -12,11 +12,10 @@ import com.sleepycat.persist.StoreConfig;
 public class DB {
 
 	
-	
 	public static void main(String[] args)
 	{
 		EntityStore store;
-		PrimaryIndex<String, String> index;
+		PrimaryIndex<String, UserData> index;
 		
 		File dir = new File("JEDB");
 		boolean success=dir.mkdirs();
@@ -39,12 +38,32 @@ public class DB {
 		Environment env = new Environment(dir, envConfig);
 		
 		store=new EntityStore(env, "CIS555", storeConfig);
-		index=store.getPrimaryIndex(String.class, String.class);
+		
+		index=store.getPrimaryIndex(String.class, UserData.class);
 		
 		
 		
-		//Runtime.getRuntime().
-		//DbShutdownHook shutdown=ne
+		String[] temp={"hi","Kri"};
+		UserData x=new UserData("vamsee","krish",temp);
 		
+		UserData y=new UserData("manoj","krishna yarlagadda",temp);
+		index.put(y);
+		index.put(x);
+	
+	
+	index.delete("manoj");
+		
+		UserData result=index.get("manoj");
+		
+		System.out.println(result.Password);
+		
+	
+		DBClose closingHook=new DBClose(env, store);
+		Runtime.getRuntime().addShutdownHook(closingHook);
+			
 	}
+	
+	
+	
+	
 }
