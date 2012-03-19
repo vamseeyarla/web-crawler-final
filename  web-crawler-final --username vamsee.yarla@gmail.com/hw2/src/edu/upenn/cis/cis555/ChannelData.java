@@ -18,6 +18,7 @@ public class ChannelData {
 
 	public ArrayList<String> XPaths;
 	public String URL;
+	public String Name;
 	
 	
 @PrimaryKey
@@ -29,9 +30,10 @@ public ChannelData()
 	
 }
 	
-public ChannelData(String ID, String[] XPaths, String URL)
+public ChannelData(String ID, String Name, String[] XPaths, String URL)
 {
 	this.ID=ID;
+	this.Name=Name;
 	this.XPaths=new ArrayList<String>();
 	//this.URLs=new ArrayList<String>();
 	

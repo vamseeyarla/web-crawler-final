@@ -12,9 +12,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
+
+import com.sleepycat.persist.EntityCursor;
 
 /**
  * @author cis555
@@ -52,6 +55,32 @@ public class XPathClientServlet extends HttpServlet{
 			showNewUserSignUp(out,0);
 		}
 		
+		else if(request.getParameter("status").equalsIgnoreCase("LOGOUT"))
+		{
+			PrintWriter out=response.getWriter();
+			HttpSession session = request.getSession();
+			session.invalidate();
+			showDefaultLogin(out,2);
+		}
+		else if(request.getParameter("status").equalsIgnoreCase("DELETECHANNEL"))
+		{
+			String ID=request.getParameter("id");
+			PrintWriter out=response.getWriter();
+			HttpSession session = request.getSession();
+			UserData data=(UserData) session.getAttribute("user");
+			
+			DB db= DB.getInstance("JEDB");
+			
+			System.out.println(data.Channels);
+			
+			data.Channels.remove(ID);
+			db.UserIndex.put(data);
+			db.deleteChannel(ID);
+			//db.ChannelIndex.delete(ID);
+			session.setAttribute("user", data);
+			successLogin(out, data);
+			
+		}
 		
 		/*
 		PrintWriter out=response.getWriter();
@@ -108,7 +137,14 @@ public class XPathClientServlet extends HttpServlet{
 		{
 		out.println("<h3>Invalid Username or Password.. Try Again<h3>");
 		}
-		
+		else if(status==2)
+		{
+		out.println("<h3>Logout Successful.<h3>");
+		}
+		else if(status==3)
+		{
+		out.println("<h3>Account created Successfully.<h3>");
+		}
 		out.println("<table>" +
 				     "<tr><td>");
 		out.println("<b>Username:</b></td>");
@@ -143,7 +179,7 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("<HTML>");
 		out.println("<HEAD>");
 		out.println("<TITLE>");
-		out.println("Login Page");
+		out.println("SignUp Page");
 		out.println("</TITLE>");
 		out.println("</HEAD>");
 		out.println("<BODY>");
@@ -207,6 +243,79 @@ public class XPathClientServlet extends HttpServlet{
 	 */
 	
 	
+	public void successLogin(PrintWriter out, UserData data)
+	{
+	
+		
+		out.println("<HTML>");
+		out.println("<HEAD>");
+		out.println("<TITLE>");
+		out.println("Client Page");
+		out.println("</TITLE>");
+		out.println("</HEAD>");
+		out.println("<BODY>");
+		out.println("<form action=\"http://localhost:1234/login\" method=\"POST\" >");
+		
+		
+		out.println("<h3>Welcome "+data.Username+"<h3>");
+		out.println("<a href=\"http://localhost:1234/login?status=LOGOUT\"> Logout </a>");
+		
+		
+		out.println("<table>");
+		out.println("</br></br>");
+		out.println("<tr>Create a New Channel</tr>");
+		
+		
+		out.println("<tr><td>");
+		out.println("<b>Enter Channel Name:</b></td>");
+		out.println("<td><input type=\"text\" name=\"channel_name\" size=\"30\"></td>");
+		
+		out.println("</tr><tr>");
+		out.println("<td><b>Enter XPaths to follow:</b></td>");
+		out.println("<td><input type=\"text\" name=\"xpaths\" size=\"30\"></td>");
+		out.println("<td><input type=\"text\" name=\"xpaths\" size=\"30\"></td>");
+		out.println("<td><input type=\"text\" name=\"xpaths\" size=\"30\"></td>");
+		out.println("</tr><tr>");
+		
+		out.println("<td><b>Enter XSL Path:</b></td>");
+		out.println("<td><input type=\"text\" name=\"xsl\" size=\"30\"></td>");
+		out.println("</tr><tr>");
+	
+		
+		//out.println("<td><b>Re-enter Password:</b></td>");
+		out.println("<td><input type=\"hidden\" name=\"status\" value=\"CHANNEL\" ></td>");
+		out.println("</tr><tr>");
+		
+		
+		out.println("<td><input type=\"submit\" value=\"Create Channel\" name=\"Create\"></td>");
+		out.println("</tr>");
+		out.println("<tr> <td>List of channels in System</td></tr>");
+		
+		DB db= DB.getInstance("JEDB");
+		
+		EntityCursor<ChannelData> channel_data=db.ChannelIndex.entities();
+		for(ChannelData temp: channel_data)
+		{
+			if(data.Channels.contains(temp.ID))
+			{
+				out.println("<tr>  <td><a href=\"http://localhost:1234/login\"> Channel: "+temp.Name+" </a> </td>");
+				out.println("<td><a href=\"http://localhost:1234/login?status=DELETECHANNEL&id="+temp.ID+"\"> Delete </a> </td>");
+				out.println("</tr>");
+			}
+			else
+			{
+				out.println("<tr> <td> Channel: "+temp.Name+" </a> </td></tr>");
+			}
+		}
+			
+			
+		out.println("</table>");
+		
+		out.println("</form>");
+		out.println("</BODY>");
+		out.println("</HTML>");
+	}
+	
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
@@ -234,19 +343,20 @@ public class XPathClientServlet extends HttpServlet{
 				showNewUserSignUp(out, 3);
 				return;
 			}
-			DB db=new DB("JEDB");
-			System.out.println(db.init());
+			DB db= DB.getInstance("JEDB");
 			
 			if(db.checkUserExists(Username))
 			{
 				PrintWriter out=response.getWriter();
 				showNewUserSignUp(out, 4);
-				db.close();
+				
 				return;
 			}
 		      db.addUser(Username, Password);
-		      db.close();
-		     
+		      
+		      
+		      PrintWriter out=response.getWriter();
+		      showDefaultLogin(out, 3);
 		}
 		
 		else if(request.getParameter("status").equalsIgnoreCase("LOGIN"))
@@ -254,19 +364,87 @@ public class XPathClientServlet extends HttpServlet{
 			String Username=request.getParameter("username");
 			String Password=request.getParameter("password");
 			
-			DB db=new DB("JEDB");
-			System.out.println(db.init());
+			DB db= DB.getInstance("JEDB");
+			
 			UserData obj;
 			if((obj=db.login(Username,Password))==null)
 			{
 				PrintWriter out=response.getWriter();
 				showDefaultLogin(out, 1);
-				db.close();
+				
 				return;
 			}
 			
 			System.out.println("SUCCESSFUL USER");
-		       db.close();
+		     
+		       
+		   	HttpSession session = request.getSession();
+			session.setAttribute("user", obj);
+		       PrintWriter out=response.getWriter();
+		       successLogin(out,obj);
+		}
+		else if(request.getParameter("status").equalsIgnoreCase("CHANNEL"))
+		{
+		
+			
+			String Name=request.getParameter("channel_name");
+			String[] XPaths=request.getParameterValues("xpaths");
+			String XSL=request.getParameter("xsl");
+			
+			if(Name.equalsIgnoreCase(""))
+			{
+				System.out.println("Name cannot be NULL");
+			}
+			else
+			{
+				DB db= DB.getInstance("JEDB");
+				String ID=db.nextChannelID();
+				
+				ChannelData data=new ChannelData(ID,Name,XPaths,XSL);
+			/*
+				data.ID=ID;
+				data.Name=Name;
+				if(!XPath1.equalsIgnoreCase("") && !(data.XPaths.contains(XPath1)))
+					{
+						data.XPaths.add(XPath1);
+					}
+				if(!XPath2.equalsIgnoreCase("") && !(data.XPaths.contains(XPath2)))
+					{
+					data.XPaths.add(XPath2);
+					}
+				if(!XPath3.equalsIgnoreCase("") && !(data.XPaths.contains(XPath3)))
+					{
+					data.XPaths.add(XPath3);
+					}
+				data.URL=XSL;
+				*/
+				
+				if(!db.addChannel(data))
+				{
+					System.out.println("CHANNEL FAILURE");
+				}
+				else
+				{
+					
+					HttpSession session = request.getSession();
+					System.out.println(session.getId());
+					UserData data_User= (UserData) session.getAttribute("user");
+					System.out.println(data.ID);
+					System.out.println(data_User.Channels);
+					data_User.Channels.add(data.ID);
+					db.UserIndex.put(data_User);
+					session.setAttribute("user", data_User);
+					PrintWriter out=response.getWriter();
+					successLogin(out, data_User);
+				}
+			 	
+			}
+			
+			
+			
+			
+			
+			
 		}
 		/*
 		//System.out.println("XPATH is:   "+request.getParameterValues("xpath"));
