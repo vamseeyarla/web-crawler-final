@@ -13,14 +13,15 @@ import com.sleepycat.persist.EntityStore;
 public class DBClose extends Thread {
 
 	private Environment env;
-	private EntityStore store;
+	private EntityStore user_store;
+	private EntityStore channel_store;
 	
 	
-	
-	public DBClose(Environment env, EntityStore store)
+	public DBClose(Environment env, EntityStore user_store,EntityStore channel_store)
 	{
 		this.env=env;
-		this.store=store;
+		this.user_store=user_store;
+		this.channel_store=channel_store;
 	}
 	
 	public void run()
@@ -28,7 +29,8 @@ public class DBClose extends Thread {
 		try{
 			if(env!=null)
 			{
-				store.close();
+				user_store.close();
+				channel_store.close();
 				env.cleanLog();
 				env.close();
 				System.out.println("Database Closed");

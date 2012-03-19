@@ -16,7 +16,7 @@ import com.sleepycat.persist.model.PrimaryKey;
 public class UserData {
 
 	public String Password;
-	public ArrayList<String> XPaths;
+	public ArrayList<String> Channels;
 	//public ArrayList<String> URLs;
 	
 	
@@ -30,19 +30,19 @@ public UserData()
 }
 	
 //public UserData(String Username,String Password, String[] XPaths, String[] URLs)
-public UserData(String Username,String Password, String[] XPaths)
+public UserData(String Username,String Password, String[] Channels)
 {
 	this.Username=Username;
 	this.Password=Password;
-	this.XPaths=new ArrayList<String>();
+	this.Channels=new ArrayList<String>();
 	//this.URLs=new ArrayList<String>();
 	
 	
-	for(int i=0;i<XPaths.length;i++)
+	for(int i=0;i<Channels.length;i++)
 	{
-		if(!this.XPaths.contains(XPaths[i]))
+		if(!this.Channels.contains(Channels[i]))
 		{
-			this.XPaths.add(XPaths[i]);
+			this.Channels.add(Channels[i]);
 		}
 	}
 	
