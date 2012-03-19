@@ -5,6 +5,7 @@ package edu.upenn.cis.cis555;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.w3c.dom.Document;
 
@@ -14,24 +15,43 @@ import org.w3c.dom.Document;
  */
 public class StartCrawl {
 String URL;
-String XPath;
+Hashtable<String,ArrayList<String>> XPaths;
 XPathEngine engine;
 int MaxSize;
 ArrayList<String> subURLs=null;
-	
-	StartCrawl(String URL, String XPath, int MaxSize)
+String[] XPathsList;
+
+	StartCrawl(String URL, Hashtable<String,ArrayList<String>> XPaths, int MaxSize)
 	{
+		XPaths=new Hashtable<String,ArrayList<String>>();
+		XPaths.put("/html/head",new ArrayList<String>());
+		XPaths.put("/html/body/a",new ArrayList<String>());
+		XPaths.put("/html/head/title",new ArrayList<String>());
+		
 		this.URL=URL;
-		this.XPath=XPath;
+		this.XPaths=XPaths;
 		this.MaxSize=MaxSize;
-		String[] XPaths=new String[1];
-		XPaths[0]=this.XPath;
-		engine=new XPathEngine(XPaths);
+		
+		XPathsList=new String[this.XPaths.size()];
+        int i=0;
+		for(String temp: this.XPaths.keySet())
+		{
+			XPathsList[i]=temp;
+			i++;
+		}
+		System.out.println("XPATHS:  :"+ XPaths);
+		engine=new XPathEngine(XPathsList);
+		
 		subURLs=new ArrayList<String>();
 	}
 	
 	public void URLCrawl(String URL)
 	{
+		if(XPaths.size()==0)
+		{
+			System.out.println("NO XPaths to look for!");
+			return;
+		}
 		boolean state=true;
 
 		System.out.println("URL:     "+URL);
@@ -66,14 +86,22 @@ ArrayList<String> subURLs=null;
 		System.out.println("VAMSEE1");
 		boolean[] status=engine.evaluate(root);
 		System.out.println("VAMSEE2");
-		if(status[0])
+		
+		for(int iterator=0;iterator<status.length;iterator++)
 		{
-			System.out.println("TRUE");
+		if(status[iterator])
+		{
+			System.out.println("TRUE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
 			//TODO Save the URL and content in Berkeley DB
+			ArrayList<String> temp=XPaths.get(XPathsList[iterator]);
+			temp.add(URL);
+			XPaths.put(XPathsList[iterator],temp);
+			temp=null;
 		}
 		else
 		{
-			System.out.println("FALSE");
+			System.out.println("FALSE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
+		}
 		}
 		
 		int CurPos=0;
