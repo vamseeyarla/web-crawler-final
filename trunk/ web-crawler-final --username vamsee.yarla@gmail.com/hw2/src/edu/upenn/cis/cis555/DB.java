@@ -20,12 +20,23 @@ public class DB {
 	Environment env;
 	EnvironmentConfig envConfig;
 	StoreConfig storeConfig;
+	static DB db=null;
 	
 	public DB(String Directory)
 	{
 		this.Directory=Directory;			
 	}
 	
+	public static DB getInstance(String Directory)
+	{
+		if(db==null)
+		{
+		db=new DB(Directory);
+		db.init();
+		}
+		return db;
+		
+	}
 	public boolean init()
 	{
 		File dir = new File(Directory);
@@ -45,6 +56,7 @@ public class DB {
 		storeConfig=new StoreConfig();
 		envConfig.setAllowCreate(true);
 		storeConfig.setAllowCreate(true);
+		storeConfig.setExclusiveCreate(true);
 		
 		env = new Environment(dir, envConfig);
 		
@@ -100,7 +112,8 @@ public class DB {
 	{
 		EntityCursor<ChannelData> channeldata= ChannelIndex.entities();
 		int Max=0;
-		if(channeldata.count()==0)
+		System.out.println("CHANNEL STATUS:  "+channeldata);
+		if(channeldata==null)
 		{
 			return "1";
 		}
@@ -135,6 +148,20 @@ public class DB {
 	}
 	
 	
+	public boolean addChannel(ChannelData data)
+	{
+	try{
+			ChannelIndex.put(data);	
+			System.out.println("New Channel Success");
+			return true;
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error in creating New Channel");
+			return false;
+		}
+	}
+	
 	public UserData login(String Username, String Password)
 	{
 		UserData temp=UserIndex.get(Username);
@@ -150,6 +177,11 @@ public class DB {
 			{
 				return null;
 			}
+	}
+	
+	public boolean deleteChannel(String ID)
+	{
+		return ChannelIndex.delete(ID);
 	}
 	
 	public void close()

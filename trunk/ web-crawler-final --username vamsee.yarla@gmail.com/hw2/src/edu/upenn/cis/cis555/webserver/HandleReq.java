@@ -2253,10 +2253,12 @@ public class HandleReq {
         					 System.out.println("Refresh done");
         					 }
         					 }
-    						
+    						 if(fs!=null)
+        					 {
     						req.PutSession(fs, true);
     						req.isSessionFCoookie=true;
     						System.out.println("RequestSESS:  "+fs.sessionID);
+        					 }
     					}
     					else
     					{
@@ -2283,11 +2285,15 @@ public class HandleReq {
     					 }
     					 }
     					
+    					 if(fs!=null)
+    					 {
 						 req.PutSession(fs, true);
 						 req.isSessionFCoookie=true;
 							System.out.println("RequestSESS:  "+fs.sessionID);
 							System.out.println("IS Session PRESENT:  "+sessions.containsKey(fs.sessionID));
-					}
+    					 }
+    					 
+    					 }
     				else{
 					//fs.setAttribute(KeyValue[0].trim(), KeyValue[1].trim());
 					req.setAttribute(KeyValue[0].trim(), KeyValue[1].trim());
