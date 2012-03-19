@@ -32,7 +32,10 @@ public class DB {
 		if(db==null)
 		{
 		db=new DB(Directory);
-		db.init();
+		if(!db.init())
+		{
+			db=null;
+		}
 		}
 		return db;
 		
@@ -102,7 +105,7 @@ public class DB {
 	
 	public boolean checkUserExists(String Username)
 	{
-		if(UserIndex.get(Username)!=null)
+		if(db.UserIndex.get(Username)!=null)
 			return true;
 		else
 			return false;
@@ -110,7 +113,7 @@ public class DB {
 	
 	public String nextChannelID()
 	{
-		EntityCursor<ChannelData> channeldata= ChannelIndex.entities();
+		EntityCursor<ChannelData> channeldata= db.ChannelIndex.entities();
 		int Max=0;
 		System.out.println("CHANNEL STATUS:  "+channeldata);
 		if(channeldata==null)
@@ -136,7 +139,7 @@ public class DB {
 			data.Username=Username;
 			data.Password=Password;
 			data.Channels=new ArrayList<String>();		
-			UserIndex.put(data);	
+			db.UserIndex.put(data);	
 			System.out.println("New User Success");
 			return true;
 		}
@@ -151,7 +154,7 @@ public class DB {
 	public boolean addChannel(ChannelData data)
 	{
 	try{
-			ChannelIndex.put(data);	
+			db.ChannelIndex.put(data);	
 			System.out.println("New Channel Success");
 			return true;
 		}
@@ -164,7 +167,7 @@ public class DB {
 	
 	public UserData login(String Username, String Password)
 	{
-		UserData temp=UserIndex.get(Username);
+		UserData temp=db.UserIndex.get(Username);
 		
 		if(temp==null)
 			return null;
@@ -181,7 +184,7 @@ public class DB {
 	
 	public boolean deleteChannel(String ID)
 	{
-		return ChannelIndex.delete(ID);
+		return db.ChannelIndex.delete(ID);
 	}
 	
 	public void close()

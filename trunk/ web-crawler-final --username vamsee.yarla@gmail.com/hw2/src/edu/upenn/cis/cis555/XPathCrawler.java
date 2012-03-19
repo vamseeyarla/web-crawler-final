@@ -6,6 +6,10 @@ package edu.upenn.cis.cis555;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import com.sleepycat.persist.EntityCursor;
 
 /**
  * @author VamseeKYarlagadda
@@ -60,8 +64,9 @@ public class XPathCrawler {
 			
 			Directory=args[1];
 			Directory="JEDB";
-			DB db=new DB(Directory);
-			if(!db.init())
+			
+			DB db=DB.getInstance("JEDB");
+			if(db==null)
 			{
 				System.out.println("PROGRAM TERMINATED!");
 				break;
@@ -91,12 +96,29 @@ public class XPathCrawler {
 		
 		//START THE PROCESS OF CRAWLING
 		
-		start=false;
 		
-		String XPath="/html/body";
-		StartCrawl crawling= new StartCrawl(URL,XPath,MaxSize);
+		
+		Hashtable<String,ArrayList<String>> XPaths=new Hashtable<String,ArrayList<String>>();
+		
+		EntityCursor<ChannelData> channels=DB.db.ChannelIndex.entities();
+		
+		for(ChannelData temp: channels)
+		{
+			for(int i=0;i<temp.XPaths.size();i++)
+			{
+				if(!XPaths.containsKey(temp.XPaths.get(i)))
+				{
+					ArrayList<String>URLs=new ArrayList<String>();
+					XPaths.put(temp.XPaths.get(i),URLs);
+				}
+			}
+		}
+		
+		//String XPath="/html/body";
+		StartCrawl crawling= new StartCrawl(URL,XPaths,MaxSize);
 		crawling.URLCrawl(URL);
 		
+		start=false;
 		
 		}
 	}
