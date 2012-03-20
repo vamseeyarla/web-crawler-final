@@ -29,9 +29,13 @@ public class DBClose extends Thread {
 		try{
 			if(env!=null)
 			{
+				System.out.println("Stage1");
 				user_store.close();
+				System.out.println("Stage2");
 				channel_store.close();
+				System.out.println("Stage3");
 				env.cleanLog();
+				System.out.println("Stage4");
 				env.close();
 				System.out.println("Database Closed");
 			}

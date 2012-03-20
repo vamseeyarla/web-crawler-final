@@ -73,9 +73,13 @@ public class XPathClientServlet extends HttpServlet{
 			
 			System.out.println(data.Channels);
 			
-			data.Channels.remove(ID);
-			db.UserIndex.put(data);
+		
 			db.deleteChannel(ID);
+			
+			data.Channels.remove(ID);
+			//	db.UserIndex.put(data);
+				db.updateData(data);
+				
 			//db.ChannelIndex.delete(ID);
 			session.setAttribute("user", data);
 			successLogin(out, data);
@@ -431,8 +435,11 @@ public class XPathClientServlet extends HttpServlet{
 					UserData data_User= (UserData) session.getAttribute("user");
 					System.out.println(data.ID);
 					System.out.println(data_User.Channels);
+					
 					data_User.Channels.add(data.ID);
-					db.UserIndex.put(data_User);
+					
+					db.updateData(data_User);
+					
 					session.setAttribute("user", data_User);
 					PrintWriter out=response.getWriter();
 					successLogin(out, data_User);

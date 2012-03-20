@@ -20,7 +20,7 @@ public class DB {
 	Environment env;
 	EnvironmentConfig envConfig;
 	StoreConfig storeConfig;
-	static DB db=null;
+    static DB db=null;
 	
 	public DB(String Directory)
 	{
@@ -34,16 +34,22 @@ public class DB {
 		db=new DB(Directory);
 		if(!db.init())
 		{
+			System.out.println("FAIL INIT");
 			db=null;
 		}
 		}
-		return db;
 		
+		return db;	
 	}
+	
 	public boolean init()
 	{
 		File dir = new File(Directory);
+		
+		if(!dir.exists())
+		{
 		boolean success=dir.mkdirs();
+		
 		if(success)
 		{
 			System.out.println("Created the DB Directory");
@@ -53,13 +59,18 @@ public class DB {
 			System.out.println("Cannot Create the DB Directory");
 			
 		}
+		}
 		try{
 		
 		envConfig=new EnvironmentConfig();
 		storeConfig=new StoreConfig();
+		
+		envConfig.setReadOnly(false);
+		storeConfig.setReadOnly(false);
+		
 		envConfig.setAllowCreate(true);
 		storeConfig.setAllowCreate(true);
-		storeConfig.setExclusiveCreate(true);
+		//storeConfig.setExclusiveCreate(true);
 		
 		env = new Environment(dir, envConfig);
 		
@@ -72,10 +83,13 @@ public class DB {
 		
 		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels);
 		Runtime.getRuntime().addShutdownHook(closingHook);
+		env.sync();
 		return true;
 		}
 		catch(Exception e)
 		{
+			
+			System.out.println(e.toString());
 			System.out.println("Error in Connecting to Berkeley DB");
 			return false;
 		}
@@ -106,10 +120,17 @@ public class DB {
 	public boolean checkUserExists(String Username)
 	{
 		if(db.UserIndex.get(Username)!=null)
+		{
+			env.sync();
 			return true;
-		else
+		}
+			else
+		{
+			env.sync();
 			return false;
-	}
+		}
+		
+		}
 	
 	public String nextChannelID()
 	{
@@ -118,6 +139,7 @@ public class DB {
 		System.out.println("CHANNEL STATUS:  "+channeldata);
 		if(channeldata==null)
 		{
+			env.sync();
 			return "1";
 		}
 		
@@ -128,7 +150,7 @@ public class DB {
 		    	Max=Integer.parseInt(temp.ID);
 		    }
 		}
-		
+		env.sync();
 		return String.valueOf(Max+1);
 	}
 	
@@ -141,11 +163,13 @@ public class DB {
 			data.Channels=new ArrayList<String>();		
 			db.UserIndex.put(data);	
 			System.out.println("New User Success");
+			env.sync();
 			return true;
 		}
 		catch(Exception e)
 		{
 			System.out.println("Error in creating New User");
+			env.sync();
 			return false;
 		}
 	}
@@ -154,12 +178,15 @@ public class DB {
 	public boolean addChannel(ChannelData data)
 	{
 	try{
+			
 			db.ChannelIndex.put(data);	
 			System.out.println("New Channel Success");
+			env.sync();
 			return true;
 		}
 		catch(Exception e)
 		{
+			env.sync();
 			System.out.println("Error in creating New Channel");
 			return false;
 		}
@@ -174,24 +201,64 @@ public class DB {
 		else
 			if(temp.Password.equals(Password))
 			{
+				env.sync();
 				return temp;
 			}
 			else
 			{
+				env.sync();
 				return null;
 			}
 	}
 	
 	public boolean deleteChannel(String ID)
 	{
-		return db.ChannelIndex.delete(ID);
+		if(db.ChannelIndex.delete(ID))
+		{
+		env.sync();
+		return true;
+		}
+		return false;
 	}
+	
+	public boolean updateData(UserData data)
+	{
+		if(db.UserIndex.put(data)!=null)
+		{
+		env.sync();	
+		return true;
+		}
+		return false;
+		
+	}
+	
 	
 	public void close()
 	{
+		env.sync();
 		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels);
 		closingHook.start();
 	}
 	
+	public boolean deleteData()
+	{
+		try{
+		for(UserData d : UserIndex.entities())
+		{
+			UserIndex.delete(d.Username);
+		}
+		for(ChannelData d : ChannelIndex.entities())
+		{
+			ChannelIndex.delete(d.ID);
+		}
+		env.sync();
+		
+		return true;
+		}
+		catch(Exception e)
+		{
+			return false;	
+		}
+	}
 	
 }

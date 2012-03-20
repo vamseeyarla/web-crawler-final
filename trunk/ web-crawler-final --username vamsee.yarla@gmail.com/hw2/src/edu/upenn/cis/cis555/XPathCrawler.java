@@ -104,12 +104,12 @@ public class XPathCrawler {
 		
 		for(ChannelData temp: channels)
 		{
-			for(int i=0;i<temp.XPaths.size();i++)
+			for(String s: temp.XPaths.keySet())
 			{
-				if(!XPaths.containsKey(temp.XPaths.get(i)))
+				if(!XPaths.containsKey(s))
 				{
 					ArrayList<String>URLs=new ArrayList<String>();
-					XPaths.put(temp.XPaths.get(i),URLs);
+					XPaths.put(s,URLs);
 				}
 			}
 		}
@@ -117,6 +117,13 @@ public class XPathCrawler {
 		//String XPath="/html/body";
 		StartCrawl crawling= new StartCrawl(URL,XPaths,MaxSize);
 		crawling.URLCrawl(URL);
+		
+		XPaths=crawling.XPaths;
+		
+		for(String temp: XPaths.keySet())
+		{
+			System.out.println(temp+" : "+XPaths.get(temp));
+		}
 		
 		start=false;
 		

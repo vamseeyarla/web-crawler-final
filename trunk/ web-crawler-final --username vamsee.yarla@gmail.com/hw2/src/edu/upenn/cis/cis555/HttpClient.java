@@ -122,7 +122,7 @@ public ByteArrayOutputStream fetchData()
 				 * Check for the status of the Robots.txt file
 				 */
 							
-				out.write(("GET "+"/robots.txt"+" HTTP/1.1\n").getBytes());
+				out.write(("GET "+"/robots.txt"+" HTTP/1.0\n").getBytes());
 				out.write(("User-Agent: "+useragent+"\n").getBytes());
 				out.write(("Host: "+address+"\n\n").getBytes());
 				
@@ -226,14 +226,14 @@ public ByteArrayOutputStream fetchData()
 					 }
 					
 					//TODO: Write code for Crawl-delay
-					
+					System.out.println("ONE STEP length: "+presentLine.length());
 				}
-					
+					System.out.println("CAME OUT");
 				}
 				br.close();
 				out.close();
 				socket.close();
-				
+				System.out.println("PARSING ROBOTS.txt FINISHED");
 				//CHECK WHETHER THE REQUEST IS IN COMPLAINCE WITH ROBOTS.TXT
 				
 				if(robots!=null)
@@ -271,7 +271,7 @@ public ByteArrayOutputStream fetchData()
 				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 				
-				out.write(("HEAD "+request+" HTTP/1.1\n").getBytes());
+				out.write(("HEAD "+request+" HTTP/1.0\n").getBytes());
 				out.write(("User-Agent: "+useragent+"\n").getBytes());
 				out.write(("Host: "+address+"\n\n").getBytes());
 			
@@ -398,7 +398,7 @@ public ByteArrayOutputStream fetchData()
 			
 				
 				
-				out.write(("GET "+request+" HTTP/1.1\n").getBytes());
+				out.write(("GET "+request+" HTTP/1.0\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
 				out.write(("User-Agent: "+useragent+"\n\n").getBytes());
 				

@@ -4,6 +4,7 @@
 package edu.upenn.cis.cis555;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.PrimaryKey;
@@ -16,7 +17,7 @@ import com.sleepycat.persist.model.PrimaryKey;
 public class ChannelData {
 
 
-	public ArrayList<String> XPaths;
+	public HashMap<String,ArrayList<String>> XPaths;
 	public String URL;
 	public String Name;
 	
@@ -34,15 +35,15 @@ public ChannelData(String ID, String Name, String[] XPaths, String URL)
 {
 	this.ID=ID;
 	this.Name=Name;
-	this.XPaths=new ArrayList<String>();
+	this.XPaths=new HashMap<String,ArrayList<String>>();
 	//this.URLs=new ArrayList<String>();
 	
 	
 	for(int i=0;i<XPaths.length;i++)
 	{
-		if(!this.XPaths.contains(XPaths[i]))
+		if(!this.XPaths.containsKey(XPaths[i]))
 		{
-			this.XPaths.add(XPaths[i]);
+			this.XPaths.put(XPaths[i],new ArrayList<String>());
 		}
 	}
 	
