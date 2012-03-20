@@ -23,10 +23,12 @@ String[] XPathsList;
 
 	StartCrawl(String URL, Hashtable<String,ArrayList<String>> XPaths, int MaxSize)
 	{
+		/*
 		XPaths=new Hashtable<String,ArrayList<String>>();
 		XPaths.put("/html/head",new ArrayList<String>());
 		XPaths.put("/html/body/a",new ArrayList<String>());
 		XPaths.put("/html/head/title",new ArrayList<String>());
+		*/
 		
 		this.URL=URL;
 		this.XPaths=XPaths;
