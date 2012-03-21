@@ -324,10 +324,20 @@ public class XPathClientServlet extends HttpServlet{
 		{
 		out.println("<h3>UserID already exits..Enter a different one<h3>");
 		}
+		else if(status==5)
+		{
+		out.println("<h3>Name entered is incorrect; either too small or bad characters<h3>");
+		}
 		
 		out.println("<table>" +
-				     "<tr><td>");
-		out.println("<b>Enter Username:</b></td>");
+				     "<tr>");
+		
+		out.println("<td><b>Enter Name:</b></td>");
+		out.println("<td><input type=\"text\" name=\"name\" size=\"30\"></td>");
+		
+		out.println("</tr><tr>");
+		
+		out.println("<td><b>Enter Username:</b></td>");
 		out.println("<td><input type=\"text\" name=\"username\" size=\"30\"></td>");
 		
 		out.println("</tr><tr>");
@@ -380,7 +390,7 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("<form action=\"http://localhost:1234/login\" method=\"POST\" >");
 		
 		
-		out.println("<h3>Welcome "+data.Username+"<h3>");
+		out.println("<h3>Welcome "+data.Name+"<h3>");
 		out.println("<a href=\"http://localhost:1234/login?status=LOGOUT\"> Logout </a>");
 		
 		
@@ -446,10 +456,31 @@ public class XPathClientServlet extends HttpServlet{
 		
 		if(request.getParameter("status").equalsIgnoreCase("NEWCRED"))
 		{
+			String Name=request.getParameter("name");
 			String Username=request.getParameter("username");
 			String Password=request.getParameter("password");
 			String Password1=request.getParameter("password1");
 			
+			char[] temp=Name.toCharArray();
+			for(int i=0;i<temp.length;i++)
+			{
+				if((temp[i]<65 && temp[i]>122) || (temp[i]>90 && temp[i]<97))
+				{
+					if(temp[i]!=32)
+					{
+						PrintWriter out=response.getWriter();
+						showNewUserSignUp(out, 5);
+						return;
+					}
+				}
+			}
+			
+			if(Name.length()<2)
+			{
+				PrintWriter out=response.getWriter();
+				showNewUserSignUp(out, 5);
+				return;
+			}	
 			if(Username.length()<3)
 			{
 				PrintWriter out=response.getWriter();
@@ -480,7 +511,7 @@ public class XPathClientServlet extends HttpServlet{
 				
 				return;
 			}
-		      db.addUser(Username, Password);
+		      db.addUser(Username, Password, Name);
 		      
 		      
 		      PrintWriter out=response.getWriter();

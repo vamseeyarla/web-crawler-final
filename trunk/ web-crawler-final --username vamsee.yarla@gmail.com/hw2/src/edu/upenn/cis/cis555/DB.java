@@ -165,10 +165,11 @@ public class DB {
 		return String.valueOf(Max+1);
 	}
 	
-	public boolean addUser(String Username, String Password)
+	public boolean addUser(String Username, String Password, String Name)
 	{
 	try{
 			UserData data=new UserData();
+			data.Name=Name;
 			data.Username=Username;
 			data.Password=Password;
 			data.Channels=new ArrayList<String>();		

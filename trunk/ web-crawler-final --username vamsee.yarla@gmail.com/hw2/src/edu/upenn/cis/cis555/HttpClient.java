@@ -31,7 +31,7 @@ public class HttpClient {
 	public String ConType=null;
 	public String ConLength=null;
 	//public String useragent="WebCrawler";
-	public String useragent="cis455crawler1";
+	public String useragent="cis455crawler";
 	public String CrawlDelay=null;
 	Hashtable<String,ArrayList<String>> robots=null;
 	public Hashtable<String,String> crawl_delay=new Hashtable<String, String>();
@@ -77,10 +77,12 @@ public ByteArrayOutputStream fetchData()
 	System.out.println("URL in FETCHDATA:  "+URL);
 	if(URL=="" || URL==null)
 	{
+		System.out.println("EXPECTED0");
 		outBytes=null;
 	}
 	else if(URL.indexOf("http://")==0 || URL.indexOf("HTTP://")==0)
 	{
+		System.out.println("EXPECTED1");
 		String address;
 		String request;
 		String port="80";
@@ -90,10 +92,10 @@ public ByteArrayOutputStream fetchData()
 		
 			if(URL.indexOf("/",7)==-1)
 			{
-				return null;
+				URL=URL.concat("/");
 			}
-			else
-			{
+		//	else
+		//	{
 				address=URL.substring(0,URL.indexOf("/",7));
 				if(address.indexOf(":",7)!=-1)
 				{
@@ -101,11 +103,12 @@ public ByteArrayOutputStream fetchData()
 					address=address.substring(0,address.indexOf(":",7));
 				}
 				request=URL.substring(URL.indexOf("/",7),URL.length());
-			}
+		//	}
 			address=address.trim();
 			request=request.trim();
-			if(address =="" || request=="")
+			if((address =="" && request=="") || address=="")
 			{
+				System.out.println("EXPECTED");
 				return null;
 			}
 			else
@@ -311,7 +314,11 @@ public ByteArrayOutputStream fetchData()
 				out=(socket.getOutputStream());
 				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
-				
+				if(request.trim().equalsIgnoreCase(""))
+				{
+					request="/";
+				}
+				System.out.println("REQ    :"+request);
 				out.write(("HEAD "+request+" HTTP/1.1\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
 				if(Timestamp!=null)
@@ -448,8 +455,10 @@ public ByteArrayOutputStream fetchData()
 				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 			
-				
-				
+				if(request.trim().equalsIgnoreCase(""))
+				{
+					request="/";
+				}
 				out.write(("GET "+request+" HTTP/1.1\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
 				if(Timestamp!=null)
