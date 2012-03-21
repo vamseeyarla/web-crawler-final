@@ -16,6 +16,10 @@ import org.w3c.dom.Document;
  */
 public class StartCrawl {
 String URL;
+
+int NumHtml=0;
+int NumXml=0;
+
 HashMap<String,ArrayList<String>> XPaths;
 XPathEngine engine;
 Double MaxSize;
@@ -24,6 +28,8 @@ String[] XPathsList;
 int accessed=0;
 String Directory;
 int NumFiles;
+boolean terminate=false;
+HashMap<String,String> servers=new HashMap<String,String>();
 URLFrontier frontier;
 
 	StartCrawl(String URL, HashMap<String,ArrayList<String>> XPaths, Double MaxSize,String Directory,int NumFiles)
@@ -91,6 +97,14 @@ URLFrontier frontier;
 			String content;
 			System.out.println("CON TYPE:    "+client.ConType);
 			
+			if(client.ConType.equalsIgnoreCase("XML"))
+			{
+				NumXml++;
+			}
+			else if(client.ConType.equalsIgnoreCase("HTML"))
+			{
+				NumHtml++;
+			}
 		      if(stream.toString().equalsIgnoreCase("NOTMODIFIED"))
 		      {
 		    	  System.out.println("NOT MODIFIED");
@@ -252,6 +266,33 @@ URLFrontier frontier;
 		{
 			agent="*";
 		}
+		
+		if(client.Hostname!=null)
+		{
+		if(servers.containsKey(client.Hostname))
+		{
+			servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
+		}
+		else
+		{
+			boolean match=false;
+			for(String s: servers.keySet())
+			{
+				if(client.Hostname.indexOf(s)!=-1)
+				{
+					match=true;
+					servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
+					break;
+				}
+			}
+			
+			if(!match)
+			{
+				servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
+			}
+		}
+		}
+		
 		if(client.crawl_delay.containsKey(agent))
 		{
 			System.out.println("GOING TO SLEEP FOR: "+client.crawl_delay.get(agent));
@@ -276,10 +317,17 @@ URLFrontier frontier;
 		}
 		}
 		*/
+		
+		if(terminate)
+		{
+			return;
+		}
+		
 		String link;
 		//if(subURLs.size()!=0)
 		if((link=frontier.get())!=null)
 		{
+			
 			accessed++;
 			if(NumFiles!=-1 && accessed==NumFiles)
 			{
