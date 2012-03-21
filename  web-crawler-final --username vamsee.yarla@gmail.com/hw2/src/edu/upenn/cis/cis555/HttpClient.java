@@ -27,6 +27,7 @@ public class HttpClient {
 	ByteArrayOutputStream outBytes;
 	public String Hostname;
 	public String Link;
+	public String Timestamp;
 	public String ConType=null;
 	public String ConLength=null;
 	//public String useragent="WebCrawler";
@@ -48,6 +49,12 @@ public HttpClient(String URL,int MaxSize)
 	this.MaxSize=MaxSize;
 }
 
+public HttpClient(String URL,int MaxSize, String Timestamp)
+{
+	this.URL=URL;
+	this.MaxSize=MaxSize;
+	this.Timestamp=Timestamp;
+}
 /*
  * Function which uses the URL passed to the constructor and check whether it is
  * 
@@ -61,6 +68,7 @@ public HttpClient(String URL,int MaxSize)
 	and read all the data and store it In bytes and return it to the calling function.
 
  */
+
 
 public ByteArrayOutputStream fetchData()
 {
@@ -122,9 +130,10 @@ public ByteArrayOutputStream fetchData()
 				 * Check for the status of the Robots.txt file
 				 */
 							
-				out.write(("GET "+"/robots.txt"+" HTTP/1.0\n").getBytes());
+				out.write(("GET "+"/robots.txt"+" HTTP/1.1\n").getBytes());
 				out.write(("User-Agent: "+useragent+"\n").getBytes());
-				out.write(("Host: "+address+"\n\n").getBytes());
+				out.write(("Host: "+address+"\n").getBytes());
+				out.write(("Connection: close\n\n").getBytes());
 				
 				out.flush();	
 				
@@ -271,10 +280,14 @@ public ByteArrayOutputStream fetchData()
 				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 				
-				out.write(("HEAD "+request+" HTTP/1.0\n").getBytes());
-				out.write(("User-Agent: "+useragent+"\n").getBytes());
-				out.write(("Host: "+address+"\n\n").getBytes());
-			
+				out.write(("HEAD "+request+" HTTP/1.1\n").getBytes());
+				out.write(("Host: "+address+"\n").getBytes());
+				if(Timestamp!=null)
+				{
+			//	out.write(("If-Modified-Since: "+Timestamp+"\n").getBytes());
+				}
+				out.write(("Connection: close\n").getBytes());
+				out.write(("User-Agent: "+useragent+"\n\n").getBytes());
 				
 				
 				String firstHeadHEAD=br.readLine();
@@ -290,6 +303,13 @@ public ByteArrayOutputStream fetchData()
 					*/
 					return null;
 				}
+			/*	else if(firstHeadHEAD.indexOf("304")!=-1)
+				{
+			//		ByteArrayOutputStream outx=new ByteArrayOutputStream();
+				//	outx.write("NOTMODIFIED".getBytes());
+				//	return outx; 
+				}
+				*/
 				else
 				{
 					System.out.println("TRACK3");
@@ -398,8 +418,13 @@ public ByteArrayOutputStream fetchData()
 			
 				
 				
-				out.write(("GET "+request+" HTTP/1.0\n").getBytes());
+				out.write(("GET "+request+" HTTP/1.1\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
+				if(Timestamp!=null)
+				{
+				out.write(("If-Modified-Since: "+Timestamp+"\n").getBytes());
+				}
+				out.write(("Connection: close\n").getBytes());
 				out.write(("User-Agent: "+useragent+"\n\n").getBytes());
 				
 				
@@ -426,6 +451,13 @@ public ByteArrayOutputStream fetchData()
 									
 				String firstHead=br.readLine();
 			
+				if(firstHead.indexOf("304")!=-1)
+				{
+					ByteArrayOutputStream outx=new ByteArrayOutputStream();
+					outx.write("NOTMODIFIED".getBytes());
+					return outx; 
+				}
+				
 					/*
 					while((contentLength=br.readLine()).indexOf("Content-Length")==-1);
 				

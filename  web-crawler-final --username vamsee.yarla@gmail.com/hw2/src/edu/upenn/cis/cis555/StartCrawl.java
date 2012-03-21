@@ -5,6 +5,7 @@ package edu.upenn.cis.cis555;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.w3c.dom.Document;
@@ -15,13 +16,13 @@ import org.w3c.dom.Document;
  */
 public class StartCrawl {
 String URL;
-Hashtable<String,ArrayList<String>> XPaths;
+HashMap<String,ArrayList<String>> XPaths;
 XPathEngine engine;
 int MaxSize;
 ArrayList<String> subURLs=null;
 String[] XPathsList;
 
-	StartCrawl(String URL, Hashtable<String,ArrayList<String>> XPaths, int MaxSize)
+	StartCrawl(String URL, HashMap<String,ArrayList<String>> XPaths, int MaxSize)
 	{
 		/*
 		XPaths=new Hashtable<String,ArrayList<String>>();
@@ -49,6 +50,8 @@ String[] XPathsList;
 	
 	public void URLCrawl(String URL)
 	{
+	
+		DB db=DB.getInstance("JEDB");
 		if(XPaths.size()==0)
 		{
 			System.out.println("NO XPaths to look for!");
@@ -57,26 +60,66 @@ String[] XPathsList;
 		boolean state=true;
 
 		System.out.println("URL:     "+URL);
-		
-		
-		HttpClient client=new HttpClient(URL,MaxSize);
+	 
+		HttpClient client=new HttpClient(URL,MaxSize,db.getURLTimestamp(URL));	
 		ByteArrayOutputStream stream=client.fetchData();
 		
 		if(stream==null)
 		{
-			System.out.println("PROBLEM WITH URL OR NULL URL FROM HTTP CLIENT");
-			state=false;
-		//	return;
+			System.out.println("Null File");
+			//db.updateCrawlData(URL,System.currentTimeMillis(),null);
+		    System.out.println("PROBLEM WITH URL OR NULL URL FROM HTTP CLIENT");
+			//state=false;
+			//	return;
 		}
+		else
+		{
+	
+	/*	HttpClient client=new HttpClient(URL,MaxSize,db.getURLTimestamp(URL));	
+		ByteArrayOutputStream stream=client.fetchData();
+		*/
+	
 		
 		while(state)
 		{
+			String content;
+			System.out.println("CON TYPE:    "+client.ConType);
 			
+		      if(stream.toString().equalsIgnoreCase("NOTMODIFIED"))
+		      {
+		    	  System.out.println("NOT MODIFIED");
+		     	  content=db.getCrawledURLData(URL);
+		    	  
+		    	  stream=new ByteArrayOutputStream();
+		    	  try{
+		    		  System.out.println(content);
+		    		  System.out.println("MANOJ");
+		    	  stream.write(content.getBytes());
+		    	  System.out.println("MANOJ1");
+		    	  System.out.println(stream.toString());
+		    	  }
+		    	  catch(Exception e)
+		    	  {
+		    		  stream=null;
+		    	  }
+		      }	
+		      else
+		      {
+		          content=stream.toString();
+		      }
 		
-		System.out.println("CON TYPE:    "+client.ConType);
-		String content=stream.toString();
+		//TODO: Update CrawlData
+		
+		//  db.updateCrawlData(URL,System.currentTimeMillis(),content);
+		
+		
 		//TODO MIGHT DO MD5 TO CHECK IF CONTENT IS ALREADY PARSED OR NOT.
 		System.out.println("VAMSEE");
+		System.out.println(stream.toString());
+		System.out.println(client.ConType);
+		System.out.println(client.Hostname);
+		System.out.println(client.Link);
+		
 		Document root=engine.createDOM(stream, client);
 		
 		if(root==null)
@@ -93,6 +136,8 @@ String[] XPathsList;
 		{
 		if(status[iterator])
 		{
+			db.updateCrawlData(URL,System.currentTimeMillis(),content);
+			
 			System.out.println("TRUE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
 			//TODO Save the URL and content in Berkeley DB
 			ArrayList<String> temp=XPaths.get(XPathsList[iterator]);
@@ -169,6 +214,8 @@ String[] XPathsList;
 		
 		
 		}
+		
+		}//ELSE 
 		/*
 		if(subURLs!=null)
 		{

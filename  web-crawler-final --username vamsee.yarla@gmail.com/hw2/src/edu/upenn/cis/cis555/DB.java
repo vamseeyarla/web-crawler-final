@@ -1,7 +1,11 @@
 package edu.upenn.cis.cis555;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
@@ -15,8 +19,10 @@ public class DB {
 	public String Directory;
 	EntityStore storeUserDetails;
 	EntityStore storeChannels;
+	EntityStore storeCrawl;
 	PrimaryIndex <String, UserData> UserIndex;
 	PrimaryIndex <String, ChannelData> ChannelIndex;
+	PrimaryIndex <String, CrawlData> CrawlIndex;
 	Environment env;
 	EnvironmentConfig envConfig;
 	StoreConfig storeConfig;
@@ -67,6 +73,8 @@ public class DB {
 		
 		envConfig.setReadOnly(false);
 		storeConfig.setReadOnly(false);
+		envConfig.setLocking(false);
+		//storeConfig.setLocking(false);
 		
 		envConfig.setAllowCreate(true);
 		storeConfig.setAllowCreate(true);
@@ -76,12 +84,15 @@ public class DB {
 		
 		storeUserDetails=new EntityStore(env, "Users", storeConfig);
 		storeChannels=new EntityStore(env, "Channels", storeConfig);
+		storeCrawl=new EntityStore(env, "CrawlInfo", storeConfig);
 		
 		UserIndex=storeUserDetails.getPrimaryIndex(String.class, UserData.class);
 		
 		ChannelIndex=storeChannels.getPrimaryIndex(String.class, ChannelData.class);
 		
-		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels);
+		CrawlIndex=storeCrawl.getPrimaryIndex(String.class, CrawlData.class);
+		
+		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels,storeCrawl);
 		Runtime.getRuntime().addShutdownHook(closingHook);
 		env.sync();
 		return true;
@@ -213,6 +224,7 @@ public class DB {
 	
 	public boolean deleteChannel(String ID)
 	{
+		System.out.println(db.ChannelIndex.get(ID).Name);
 		if(db.ChannelIndex.delete(ID))
 		{
 		env.sync();
@@ -236,21 +248,25 @@ public class DB {
 	public void close()
 	{
 		env.sync();
-		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels);
+		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels,storeCrawl);
 		closingHook.start();
 	}
 	
 	public boolean deleteData()
 	{
 		try{
-		for(UserData d : UserIndex.entities())
-		{
-			UserIndex.delete(d.Username);
-		}
-		for(ChannelData d : ChannelIndex.entities())
-		{
-			ChannelIndex.delete(d.ID);
-		}
+			for(UserData d : UserIndex.entities())
+			{
+				UserIndex.delete(d.Username);
+			}
+			for(ChannelData d : ChannelIndex.entities())
+			{
+				ChannelIndex.delete(d.ID);
+			}
+			for(CrawlData d : CrawlIndex.entities())
+			{
+			CrawlIndex.delete(d.URL);
+			}
 		env.sync();
 		
 		return true;
@@ -261,4 +277,82 @@ public class DB {
 		}
 	}
 	
+	public boolean updateValues(HashMap<String,ArrayList<String>> XPaths)
+	{
+		System.out.println(XPaths);
+		
+		for(ChannelData data: ChannelIndex.entities())
+		{
+			HashMap<String,ArrayList<String>> org=new HashMap<String, ArrayList<String>>();
+			for(String xpath: data.XPaths.keySet())
+			{
+				org.put(xpath, XPaths.get(xpath));
+			}
+			data.XPaths=org;
+			ChannelIndex.put(data);
+		}
+		env.sync();
+		return true;
+	}
+	
+	
+	public ChannelData getChannelData(String ID)
+	{
+		return ChannelIndex.get(ID);
+	}
+	
+	public boolean updateCrawlData(String URL, long Time,String Data)
+	{
+		try{
+		 Date headDate =new Date(Time);
+         DateFormat headformatter=new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+  	   	 String date=headformatter.format(headDate).concat(" GMT");
+		 
+  	   	 CrawlIndex.put(new CrawlData(URL,date,Data));
+  	   	 env.sync();
+  	   	 return true;
+		}
+		catch(Exception e)
+		{env.sync();
+			return false;
+		}
+	}
+	
+	public boolean checkURLCrawled(String URL)
+	{
+	    
+		if(CrawlIndex.get(URL)==null)
+		{
+			env.sync();
+			return false;
+		}
+		else
+		{
+			env.sync();
+			return true;
+		}
+	}
+	
+	public String getURLTimestamp(String URL)
+	{
+		if(CrawlIndex.get(URL)!=null)
+		{
+			env.sync();
+		return CrawlIndex.get(URL).Timestamp;
+		}
+		else
+		{
+			env.sync();
+			return null;
+		}
+		}
+
+	public String getCrawledURLData(String URL)
+	{
+		
+		return CrawlIndex.get(URL).Data;
+	
+	}
+	
+
 }

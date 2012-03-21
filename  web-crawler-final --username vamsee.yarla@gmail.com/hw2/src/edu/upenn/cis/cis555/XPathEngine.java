@@ -113,10 +113,13 @@ public class XPathEngine {
 	
 		if(client.ConType==null)
 		{
+			System.out.println("PROB IN CREATEDOM 1");
 			return null;
 		}
 		else if(client.ConType.equalsIgnoreCase("XML"))
 		{
+			System.out.println("PROB IN CREATEDOM 2");
+			
 			System.out.println("XML");
 			DocumentBuilderFactory doc=null;
 			DocumentBuilder docBuilder=null;
@@ -147,15 +150,18 @@ public class XPathEngine {
 		}
 		else if(client.ConType.equalsIgnoreCase("HTML"))
 		{
+			System.out.println("PROB IN CREATEDOM 3");
+			
 			Document docHead=null;
 		
 			try{
-			
+				System.out.println("PROB IN CREATEDOM 4");
 			ByteArrayInputStream stream=new ByteArrayInputStream(outStream.toByteArray());
 			Tidy tidy=new Tidy();
-			
+			System.out.println("PROB IN CREATEDOM 5");
 			tidy.setTidyMark(false);
 			tidy.setShowWarnings(false);
+			System.out.println(stream.toString());
 			docHead=tidy.parseDOM(stream, System.out);
 			}
 			catch(Exception e)

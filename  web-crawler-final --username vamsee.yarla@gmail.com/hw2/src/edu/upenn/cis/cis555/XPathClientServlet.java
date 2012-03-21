@@ -7,6 +7,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -78,12 +84,119 @@ public class XPathClientServlet extends HttpServlet{
 			
 			data.Channels.remove(ID);
 			//	db.UserIndex.put(data);
-				db.updateData(data);
+			db.updateData(data);
 				
 			//db.ChannelIndex.delete(ID);
 			session.setAttribute("user", data);
 			successLogin(out, data);
 			
+		}
+		else if(request.getParameter("status").equalsIgnoreCase("OPENCHANNEL"))
+		{
+			//TODO: display of the channel
+			HashMap<String,String> month=new HashMap<String, String>();
+			month.put("Jan", "01");
+			month.put("Feb", "02");
+			month.put("Mar", "03");
+			month.put("Apr", "04");
+			month.put("May", "05");
+			month.put("Jun", "06");
+			month.put("Jul", "07");
+			month.put("Aug", "08");
+			month.put("Sep", "09");
+			month.put("Oct", "10");
+			month.put("Nov", "11");
+			month.put("Dec", "12");
+			
+			
+			String ID=request.getParameter("id");
+			
+			DB db=DB.getInstance("JEBD");
+			ChannelData data=db.getChannelData(ID);
+			PrintWriter out=response.getWriter();
+			
+			response.setContentType("text/xml");
+			
+			out.println("<?xml version=\"1.0\" encoding=\"UTF-16\"?>");
+		//	out.println("<?xml-stylesheet type=\"text/xsl\" href=\""+data.URL+"\"?>");
+			
+			
+			out.println("<documentcollection>");
+			
+			ArrayList<String> result=new ArrayList<String>();
+			
+			for(String xpath: data.XPaths.keySet())
+			{
+				for(int i=0;i<data.XPaths.get(xpath).size();i++)
+				{
+					String time=db.getURLTimestamp(data.XPaths.get(xpath).get(i));
+					time=time.substring(0,time.length()-4);
+					time=time.substring(5);
+					System.out.println(time);
+					String[] times=time.split(" ");
+					
+					DateFormat sysformatter=new SimpleDateFormat("HH:mm:ss");
+					
+					Date userdate=null;
+					try{
+						
+					    userdate=sysformatter.parse(times[3]);
+					    time=null;
+					    time=times[2]+"-"+month.get(times[1])+"-"+times[0]+"T"+userdate.getHours()+":"+userdate.getMinutes()+":"+userdate.getSeconds();
+					}
+					catch(Exception e)
+					{
+						System.out.println("EXCEPTION IN CHANGING DATE");
+					}
+					//CrawlIndex.get(data.XPaths.get(xpath).get(i));
+					
+					if(!result.contains("crawled=\""+time+"\" location=\""+data.XPaths.get(xpath).get(i)+"\""))
+					{
+					result.add("crawled=\""+time+"\" location=\""+data.XPaths.get(xpath).get(i)+"\"");
+					}
+				}
+			}
+			
+			for(int i=0;i<result.size();i++)
+			{
+				out.println("<document "+result.get(i)+">");
+				//out.println();
+				out.println("</document>");
+			}
+			
+			out.println("</documentcollection>");
+			
+		//	out.println("			<student_list> 			       <student>			           <name>George Washington</name>			           <major>Politics</major>			           <phone>312-123-4567</phone>			           <email>gw@example.edu</email>			       </student>			       <student>			          <name>Janet Jones</name>			          <major>Undeclared</major>			          <phone>311-122-2233</phone>			          <email>janetj@example.edu</email>			      </student>			      <student>			          <name>Joe Taylor</name>			          <major>Engineering</major>			          <phone>211-111-2333</phone>			          <email>joe@example.edu</email>  </student>			  </student_list>");			
+			/*
+			out.println("Channel Dispaly");
+			out.println("</TITLE>");
+			out.println("</HEAD>");
+			out.println("<BODY>");
+			out.println("<form action=\"http://localhost:1234/demo\" method=\"POST\" >");
+			out.println("<table>" +
+					     "<tr><td>");
+			out.println("<b>Enter XPath</b></td>");
+			out.println("<td><input type=\"text\" name=\"xpath\" size=\"30\"></td>");
+			out.println("<td><input type=\"text\" name=\"xpath\" size=\"30\"></td>");
+			out.println("<td><input type=\"text\" name=\"xpath\" size=\"30\"></td>");
+			out.println("</tr><tr>");
+			out.println("<td><b>Enter URL for HTML/XML</b></td>");
+			out.println("<td><input type=\"text\" name=\"url\" size=\"30\"></td>");
+			out.println("</tr><tr>");
+			out.println("<td><input type=\"Submit\" name=\"Submit\" ></td>");
+			out.println("</tr></table>");
+			out.println("</br></br>");
+			out.println("*** The URL can be File System Address or any Remote Address; All Remote Addresses are supposed to start with http://");
+			out.println("</br></br>");
+			out.println("Created By:-");
+			out.println("</br>");
+			out.println("Vamsee K Yarlagadda");
+			out.println("</br>");
+			out.println("PennKey: vamsee>");
+			out.println("</form>");
+			out.println("</BODY>");
+			out.println("</documentcollection>");
+			*/
 		}
 		
 		/*
@@ -302,13 +415,13 @@ public class XPathClientServlet extends HttpServlet{
 		{
 			if(data.Channels.contains(temp.ID))
 			{
-				out.println("<tr>  <td><a href=\"http://localhost:1234/login\"> Channel: "+temp.Name+" </a> </td>");
+				out.println("<tr>  <td><a href=\"http://localhost:1234/login?status=OPENCHANNEL&id="+temp.ID+"\"> Channel: "+temp.Name+" </a> </td>");
 				out.println("<td><a href=\"http://localhost:1234/login?status=DELETECHANNEL&id="+temp.ID+"\"> Delete </a> </td>");
 				out.println("</tr>");
 			}
 			else
 			{
-				out.println("<tr> <td> Channel: "+temp.Name+" </a> </td></tr>");
+				out.println("<tr>  <td><a href=\"http://localhost:1234/login?status=OPENCHANNEL&id="+temp.ID+"\"> Channel: "+temp.Name+" </a> </td>");
 			}
 		}
 			
@@ -393,6 +506,27 @@ public class XPathClientServlet extends HttpServlet{
 			
 			String Name=request.getParameter("channel_name");
 			String[] XPaths=request.getParameterValues("xpaths");
+			int count=0;
+			for(int i=0;i<XPaths.length;i++)
+			{
+				if(!XPaths[i].trim().equalsIgnoreCase(""))
+				{
+					count++;
+				}
+			}
+			String[] temp=new String[count];
+			System.out.println("COUNT:     "+count);
+			count=0;
+		
+			for(int i=0;i<XPaths.length;i++)
+			{
+				if(!XPaths[i].trim().equalsIgnoreCase(""))
+				{
+					temp[count]=XPaths[i].trim();
+					count++;
+				}
+			}
+			
 			String XSL=request.getParameter("xsl");
 			
 			if(Name.equalsIgnoreCase(""))
@@ -404,7 +538,7 @@ public class XPathClientServlet extends HttpServlet{
 				DB db= DB.getInstance("JEDB");
 				String ID=db.nextChannelID();
 				
-				ChannelData data=new ChannelData(ID,Name,XPaths,XSL);
+				ChannelData data=new ChannelData(ID,Name,temp,XSL);
 			/*
 				data.ID=ID;
 				data.Name=Name;
