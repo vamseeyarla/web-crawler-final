@@ -32,8 +32,10 @@ public class HttpClient {
 	public String ConLength=null;
 	//public String useragent="WebCrawler";
 	public String useragent="cis455crawler1";
+	public String CrawlDelay=null;
 	Hashtable<String,ArrayList<String>> robots=null;
-	int MaxSize=-1;
+	public Hashtable<String,String> crawl_delay=new Hashtable<String, String>();
+	double MaxSize=-1;
 	/*
 	 * Constructor of HttpClient that takes a string which contains URL and saves it
 	 * in one of the global variables.
@@ -43,13 +45,13 @@ public HttpClient(String url)
 	URL=url;
 }
 
-public HttpClient(String URL,int MaxSize)
+public HttpClient(String URL,double MaxSize)
 {
 	this.URL=URL;
 	this.MaxSize=MaxSize;
 }
 
-public HttpClient(String URL,int MaxSize, String Timestamp)
+public HttpClient(String URL,double MaxSize, String Timestamp)
 {
 	this.URL=URL;
 	this.MaxSize=MaxSize;
@@ -234,6 +236,36 @@ public ByteArrayOutputStream fetchData()
 						}
 					 }
 					
+					if(presentLine.length()>11 && presentLine.substring(0,11).equalsIgnoreCase("Crawl-Delay"))
+					{
+						String[] split=presentLine.split(":");
+						
+						if(split.length!=2 && split[1].trim().equalsIgnoreCase(""))
+						{
+							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							robots=null;
+							break;
+						}
+						else
+						{
+							split[1]=split[1].trim();
+							if(UserAgent==null)
+							{
+								System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+								robots=null;
+								break;
+							}
+							else
+							{	
+								System.out.println("Crawl_Delay: #"+split[1]);
+								
+								crawl_delay.put(UserAgent, split[1]);
+							}
+							
+						}
+					}
+					
+		           							
 					//TODO: Write code for Crawl-delay
 					System.out.println("ONE STEP length: "+presentLine.length());
 				}
@@ -374,7 +406,7 @@ public ByteArrayOutputStream fetchData()
 							if(MaxSize!=-1)
 							{
 							  
-								if(MaxSize < Integer.parseInt(ConLength))
+								if(MaxSize < (Integer.parseInt(ConLength)/1024/1024))
 								{					
 									/*
 									 * Huge File Size

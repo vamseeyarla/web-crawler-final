@@ -22,8 +22,8 @@ public class XPathCrawler {
 	{
 		String URL;
 		String Directory;
-		int MaxSize;
-		int NumFiles;
+		double MaxSize=10;
+		int NumFiles=-1;
 		
 		boolean start=true;
 		
@@ -64,7 +64,7 @@ public class XPathCrawler {
 			*/
 			
 			Directory=args[1];
-			Directory="JEDB";
+		//	Directory="JEDB";
 			
 			DB db=DB.getInstance(Directory);
 			if(db==null)
@@ -74,12 +74,26 @@ public class XPathCrawler {
 			}
 			
 			//MAXIMUM SIZE OF FILE
-			MaxSize=Integer.parseInt(args[2]);
+			try{
+			MaxSize=Double.parseDouble(args[2]);
+			}
+			catch(Exception e)
+			{
+				//MaxSize=10;
+				System.out.println("Error in parsing Max File Size. Program Terminated!");
+			}
 			
 			//OPTIONAL ARGUMENT
 			if(args.length>3)
 			{
+			try{	
 				NumFiles=Integer.parseInt(args[3]);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error in parsing Max no of Files to be parsed. Program Terminated!");
+			}
+			
 			}
 			
 			}
@@ -116,7 +130,7 @@ public class XPathCrawler {
 		}
 		
 		//String XPath="/html/body";
-		StartCrawl crawling= new StartCrawl(URL,XPaths,MaxSize);
+		StartCrawl crawling= new StartCrawl(URL,XPaths,MaxSize,Directory,NumFiles);
 		crawling.URLCrawl(URL);
 		
 		XPaths=crawling.XPaths;

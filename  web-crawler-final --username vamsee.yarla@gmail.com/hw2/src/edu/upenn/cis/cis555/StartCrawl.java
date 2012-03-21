@@ -18,11 +18,14 @@ public class StartCrawl {
 String URL;
 HashMap<String,ArrayList<String>> XPaths;
 XPathEngine engine;
-int MaxSize;
+Double MaxSize;
 ArrayList<String> subURLs=null;
 String[] XPathsList;
+int accessed=0;
+String Directory;
+int NumFiles;
 
-	StartCrawl(String URL, HashMap<String,ArrayList<String>> XPaths, int MaxSize)
+	StartCrawl(String URL, HashMap<String,ArrayList<String>> XPaths, Double MaxSize,String Directory,int NumFiles)
 	{
 		/*
 		XPaths=new Hashtable<String,ArrayList<String>>();
@@ -30,10 +33,11 @@ String[] XPathsList;
 		XPaths.put("/html/body/a",new ArrayList<String>());
 		XPaths.put("/html/head/title",new ArrayList<String>());
 		*/
-		
+		this.Directory=Directory;
 		this.URL=URL;
 		this.XPaths=XPaths;
 		this.MaxSize=MaxSize;
+		this.NumFiles=NumFiles;
 		
 		XPathsList=new String[this.XPaths.size()];
         int i=0;
@@ -51,7 +55,7 @@ String[] XPathsList;
 	public void URLCrawl(String URL)
 	{
 	
-		DB db=DB.getInstance("JEDB");
+		DB db=DB.getInstance(Directory);
 		if(XPaths.size()==0)
 		{
 			System.out.println("NO XPaths to look for!");
@@ -92,11 +96,11 @@ String[] XPathsList;
 		    	  
 		    	  stream=new ByteArrayOutputStream();
 		    	  try{
-		    		  System.out.println(content);
-		    		  System.out.println("MANOJ");
+		    		//  System.out.println(content);
+		    	//	  System.out.println("MANOJ");
 		    	  stream.write(content.getBytes());
-		    	  System.out.println("MANOJ1");
-		    	  System.out.println(stream.toString());
+		    	//  System.out.println("MANOJ1");
+		    //	  System.out.println(stream.toString());
 		    	  }
 		    	  catch(Exception e)
 		    	  {
@@ -112,14 +116,15 @@ String[] XPathsList;
 		
 		//  db.updateCrawlData(URL,System.currentTimeMillis(),content);
 		
-		
+	/*	
 		//TODO MIGHT DO MD5 TO CHECK IF CONTENT IS ALREADY PARSED OR NOT.
 		System.out.println("VAMSEE");
 		System.out.println(stream.toString());
 		System.out.println(client.ConType);
 		System.out.println(client.Hostname);
 		System.out.println(client.Link);
-		
+		*/
+		      
 		Document root=engine.createDOM(stream, client);
 		
 		if(root==null)
@@ -128,9 +133,9 @@ String[] XPathsList;
 			break;
 		}
 		
-		System.out.println("VAMSEE1");
+		//System.out.println("VAMSEE1");
 		boolean[] status=engine.evaluate(root);
-		System.out.println("VAMSEE2");
+		//System.out.println("VAMSEE2");
 		
 		for(int iterator=0;iterator<status.length;iterator++)
 		{
@@ -154,7 +159,7 @@ String[] XPathsList;
 		int CurPos=0;
 		int pos;
 		
-		System.out.println("YAHOOOOOOOOOOOOOOOOOOOOOO");
+		//System.out.println("YAHOOOOOOOOOOOOOOOOOOOOOO");
 		//System.out.println(content);
 		/*
 		if(((pos=content.indexOf("href", CurPos))!=-1) || ((pos=content.indexOf("HREF", CurPos))!=-1) )
@@ -191,7 +196,7 @@ String[] XPathsList;
 			}
 			else
 			{
-				System.out.println("YAHOO");
+			//	System.out.println("YAHOO");
 				if(client.Link.equalsIgnoreCase("/"))
 				{
 					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
@@ -206,9 +211,9 @@ String[] XPathsList;
 			
 			CurPos=pos+1;
 		}
-		System.out.println("GMAIl");
+	//	System.out.println("GMAIl");
 		System.out.println(subURLs);
-		System.out.println("GMAIL@");
+	//	System.out.println("GMAIL@");
 		
 		state=false;
 		
@@ -216,6 +221,34 @@ String[] XPathsList;
 		}
 		
 		}//ELSE 
+		
+		//last_accessed_time=System.currentTimeMillis();
+		
+		
+		String agent;
+		
+		if(client.crawl_delay.containsKey(client.useragent))
+		{
+			agent=client.useragent;
+		}
+		else
+		{
+			agent="*";
+		}
+		if(client.crawl_delay.containsKey(agent))
+		{
+			System.out.println("GOING TO SLEEP FOR: "+client.crawl_delay.get(agent));
+		try{
+			Thread.sleep(Integer.parseInt(client.crawl_delay.get(agent)));
+			}
+			catch(Exception e)
+			{
+				System.out.println("CRAWL DELAY THREAD INTERRUPTED");
+			}
+		}
+		
+		
+		
 		/*
 		if(subURLs!=null)
 		{
@@ -229,6 +262,12 @@ String[] XPathsList;
 		
 		if(subURLs.size()!=0)
 		{
+			accessed++;
+			if(NumFiles!=-1 && accessed==NumFiles)
+			{
+				System.out.println("TOTAL:   "+accessed);
+				return;
+			}
 			URLCrawl(subURLs.remove(0));
 		}
 		

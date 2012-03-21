@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +77,11 @@ public class XPathClientServlet extends HttpServlet{
 			HttpSession session = request.getSession();
 			UserData data=(UserData) session.getAttribute("user");
 			
-			DB db= DB.getInstance("JEDB");
+			
+			
+			ServletConfig config = getServletConfig();
+			ServletContext context = config.getServletContext();
+			DB db= DB.getInstance(context.getInitParameter("BDBstore"));
 			
 			System.out.println(data.Channels);
 			
@@ -408,7 +414,9 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("</tr>");
 		out.println("<tr> <td>List of channels in System</td></tr>");
 		
-		DB db= DB.getInstance("JEDB");
+		ServletConfig config = getServletConfig();
+		ServletContext context = config.getServletContext();
+		DB db= DB.getInstance(context.getInitParameter("BDBstore"));
 		
 		EntityCursor<ChannelData> channel_data=db.ChannelIndex.entities();
 		for(ChannelData temp: channel_data)
@@ -460,7 +468,10 @@ public class XPathClientServlet extends HttpServlet{
 				showNewUserSignUp(out, 3);
 				return;
 			}
-			DB db= DB.getInstance("JEDB");
+			
+			ServletConfig config = getServletConfig();
+			ServletContext context = config.getServletContext();
+			DB db= DB.getInstance(context.getInitParameter("BDBstore"));
 			
 			if(db.checkUserExists(Username))
 			{
@@ -481,7 +492,9 @@ public class XPathClientServlet extends HttpServlet{
 			String Username=request.getParameter("username");
 			String Password=request.getParameter("password");
 			
-			DB db= DB.getInstance("JEDB");
+			ServletConfig config = getServletConfig();
+			ServletContext context = config.getServletContext();
+			DB db= DB.getInstance(context.getInitParameter("BDBstore"));
 			
 			UserData obj;
 			if((obj=db.login(Username,Password))==null)
@@ -535,7 +548,10 @@ public class XPathClientServlet extends HttpServlet{
 			}
 			else
 			{
-				DB db= DB.getInstance("JEDB");
+				ServletConfig config = getServletConfig();
+				ServletContext context = config.getServletContext();
+				DB db= DB.getInstance(context.getInitParameter("BDBstore"));
+				
 				String ID=db.nextChannelID();
 				
 				ChannelData data=new ChannelData(ID,Name,temp,XSL);
