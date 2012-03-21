@@ -36,6 +36,7 @@ public class HttpClient {
 	Hashtable<String,ArrayList<String>> robots=null;
 	public Hashtable<String,String> crawl_delay=new Hashtable<String, String>();
 	double MaxSize=-1;
+	
 	/*
 	 * Constructor of HttpClient that takes a string which contains URL and saves it
 	 * in one of the global variables.
