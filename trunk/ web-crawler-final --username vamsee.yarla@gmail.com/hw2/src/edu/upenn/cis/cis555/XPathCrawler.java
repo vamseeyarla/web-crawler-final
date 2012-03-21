@@ -7,6 +7,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.sleepycat.persist.EntityCursor;
@@ -65,7 +66,7 @@ public class XPathCrawler {
 			Directory=args[1];
 			Directory="JEDB";
 			
-			DB db=DB.getInstance("JEDB");
+			DB db=DB.getInstance(Directory);
 			if(db==null)
 			{
 				System.out.println("PROGRAM TERMINATED!");
@@ -98,7 +99,7 @@ public class XPathCrawler {
 		
 		
 		
-		Hashtable<String,ArrayList<String>> XPaths=new Hashtable<String,ArrayList<String>>();
+		HashMap<String,ArrayList<String>> XPaths=new HashMap<String,ArrayList<String>>();
 		
 		EntityCursor<ChannelData> channels=DB.db.ChannelIndex.entities();
 		
@@ -124,6 +125,9 @@ public class XPathCrawler {
 		{
 			System.out.println(temp+" : "+XPaths.get(temp));
 		}
+		
+		DB db=DB.getInstance(Directory);
+		db.updateValues(XPaths);
 		
 		start=false;
 		
