@@ -19,11 +19,12 @@ String URL;
 HashMap<String,ArrayList<String>> XPaths;
 XPathEngine engine;
 Double MaxSize;
-ArrayList<String> subURLs=null;
+//ArrayList<String> subURLs=null;
 String[] XPathsList;
 int accessed=0;
 String Directory;
 int NumFiles;
+URLFrontier frontier;
 
 	StartCrawl(String URL, HashMap<String,ArrayList<String>> XPaths, Double MaxSize,String Directory,int NumFiles)
 	{
@@ -38,6 +39,7 @@ int NumFiles;
 		this.XPaths=XPaths;
 		this.MaxSize=MaxSize;
 		this.NumFiles=NumFiles;
+		frontier=new URLFrontier();
 		
 		XPathsList=new String[this.XPaths.size()];
         int i=0;
@@ -49,7 +51,7 @@ int NumFiles;
 		System.out.println("XPATHS:  :"+ XPaths);
 		engine=new XPathEngine(XPathsList);
 		
-		subURLs=new ArrayList<String>();
+	//	subURLs=new ArrayList<String>();
 	}
 	
 	public void URLCrawl(String URL)
@@ -110,6 +112,16 @@ int NumFiles;
 		      else
 		      {
 		          content=stream.toString();
+		          
+		          boolean contentSeen=ContentSeenTest.isContentSeen(content, Directory);
+		          if(contentSeen)
+		          {
+		        	  System.out.println("OLD CONTENT: Content has already been seen");
+		          }
+		          else
+		          {
+		        	  System.out.println("NEW CONTENT: Content has not not seen before");
+		          }
 		      }
 		
 		//TODO: Update CrawlData
@@ -192,7 +204,8 @@ int NumFiles;
 			if(suburl.indexOf("http")==0||suburl.indexOf("HTTP")==0)
 			{
 				//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
-				subURLs.add(suburl);	
+				//subURLs.add(suburl);	
+				frontier.put(suburl);
 			}
 			else
 			{
@@ -200,19 +213,23 @@ int NumFiles;
 				if(client.Link.equalsIgnoreCase("/"))
 				{
 					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
-				subURLs.add("http://".concat(client.Hostname).concat("/").concat(suburl));
+				//subURLs.add("http://".concat(client.Hostname).concat("/").concat(suburl));
+				
+				frontier.put("http://".concat(client.Hostname).concat("/").concat(suburl));
 				}
 				else
 				{
 					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
-				subURLs.add("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));	
+			//	subURLs.add("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));	
+				frontier.put("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));
+				
 				}
 			}
 			
 			CurPos=pos+1;
 		}
 	//	System.out.println("GMAIl");
-		System.out.println(subURLs);
+		System.out.println(frontier);
 	//	System.out.println("GMAIL@");
 		
 		state=false;
@@ -259,8 +276,9 @@ int NumFiles;
 		}
 		}
 		*/
-		
-		if(subURLs.size()!=0)
+		String link;
+		//if(subURLs.size()!=0)
+		if((link=frontier.get())!=null)
 		{
 			accessed++;
 			if(NumFiles!=-1 && accessed==NumFiles)
@@ -268,7 +286,7 @@ int NumFiles;
 				System.out.println("TOTAL:   "+accessed);
 				return;
 			}
-			URLCrawl(subURLs.remove(0));
+			URLCrawl(link);
 		}
 		
 		
