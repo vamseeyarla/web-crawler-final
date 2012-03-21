@@ -15,6 +15,7 @@ import com.sleepycat.persist.model.PrimaryKey;
 @Entity
 public class UserData {
 
+	public String Name;
 	public String Password;
 	public ArrayList<String> Channels;
 	//public ArrayList<String> URLs;
@@ -30,8 +31,9 @@ public UserData()
 }
 	
 //public UserData(String Username,String Password, String[] XPaths, String[] URLs)
-public UserData(String Username,String Password, String[] Channels)
+public UserData(String Username,String Password, String[] Channels, String Name)
 {
+	this.Name=Name;
 	this.Username=Username;
 	this.Password=Password;
 	this.Channels=new ArrayList<String>();
