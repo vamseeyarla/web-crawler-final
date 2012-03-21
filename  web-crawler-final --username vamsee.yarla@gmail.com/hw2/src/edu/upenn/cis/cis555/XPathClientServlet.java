@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -33,6 +34,7 @@ import com.sleepycat.persist.EntityCursor;
  */
 public class XPathClientServlet extends HttpServlet{
 
+	HttpServletRequest request;
 	/*
 	 * (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -47,6 +49,7 @@ public class XPathClientServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
+		this.request=request;
 		System.out.println(request.getParameterMap().size());
 		System.out.println(request.getParameterMap().toString());
 		
@@ -124,7 +127,7 @@ public class XPathClientServlet extends HttpServlet{
 			response.setContentType("text/xml");
 			
 			out.println("<?xml version=\"1.0\" encoding=\"UTF-16\"?>");
-		//	out.println("<?xml-stylesheet type=\"text/xsl\" href=\""+data.URL+"\"?>");
+			out.println("<?xml-stylesheet type=\"text/xsl\" href=\""+data.URL+"\"?>");
 			
 			
 			out.println("<documentcollection>");
@@ -204,6 +207,83 @@ public class XPathClientServlet extends HttpServlet{
 			out.println("</documentcollection>");
 			*/
 		}
+		else if(request.getParameter("status").equalsIgnoreCase("STARTCRAWL"))
+		{
+			boolean status=true;
+			String[] args;
+			 if(request.getParameter("URL2CRAWL").trim().equalsIgnoreCase("") || request.getParameter("SIZE2CRAWL").trim().equalsIgnoreCase(""))
+			 {
+				
+				 System.out.println("ERROR IN GETTING DATA FROM USER");
+				 openAdminControl(response.getWriter(), 1);
+				 status=false;
+			 }
+			if(request.getParameter("FILES2CRAWL")==null || request.getParameter("FILES2CRAWL").trim().equalsIgnoreCase(""))
+			{
+				args=new String[3];
+			}
+			else
+			{
+				args=new String[4];
+			}
+			ServletConfig config = getServletConfig();
+			ServletContext context = config.getServletContext();
+		
+			args[0]=request.getParameter("URL2CRAWL").trim();
+			args[1]=(context.getInitParameter("BDBstore"));
+			
+			try{
+				Double d=Double.parseDouble(request.getParameter("SIZE2CRAWL"));
+				args[2]=request.getParameter("SIZE2CRAWL").trim();
+				
+				if(args.length==4)
+				{	
+					int e=Integer.parseInt(request.getParameter("FILES2CRAWL"));
+					args[3]=request.getParameter("FILES2CRAWL").trim();	
+				}
+				
+			   }
+			catch(Exception e)
+			{
+				 status=false;
+				 System.out.println("ERROR IN GETTING DATA FROM USER");
+				 openAdminControl(response.getWriter(), 2);
+			}
+			
+			
+		
+			if(status)
+			{
+			InvokeCrawler crawler=new InvokeCrawler();
+			crawler.args=args;
+			HttpSession session = request.getSession();
+			session.setAttribute("crawl", crawler);
+			crawler.start();
+			
+			openAdminControl(response.getWriter(), 5);
+			}
+		}
+		
+		else if(request.getParameter("status").equalsIgnoreCase("STOPCRAWL"))
+		{
+			HttpSession session = request.getSession();
+			InvokeCrawler crawler = (InvokeCrawler) session.getAttribute("crawl");
+			XPathCrawler data=crawler.crawlObj;
+			if(crawler.running)
+			{
+				data.crawling.terminate=true;
+			}
+			
+			
+			System.out.println("DATAVAMSEE:   "+data.crawling.XPaths);
+			session.invalidate();
+			
+			ServletConfig config = getServletConfig();
+			ServletContext context = config.getServletContext();
+			
+			
+			displayCrawlResult(response.getWriter(), data, context.getInitParameter("BDBstore"));
+		}
 		
 		/*
 		PrintWriter out=response.getWriter();
@@ -254,8 +334,9 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("</TITLE>");
 		out.println("</HEAD>");
 		out.println("<BODY>");
-		out.println("<form action=\"http://localhost:1234/login\" method=\"POST\" >");
-	
+		//out.println("<form action=\"http://localhost:1234/login\" method=\"POST\" >");
+		out.println("<form action=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\" method=\"POST\" >");
+		
 		if(status==1)
 		{
 		out.println("<h3>Invalid Username or Password.. Try Again<h3>");
@@ -286,7 +367,11 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("<td><input type=\"submit\" value=\"Submit\" name=\"Submit\"></td>");
 		out.println("</tr><tr>");
 	
-		out.println("<td> <a href=\"http://localhost:1234/login?status=NEWUSER\"> New Users! Signup.. </a></td>");
+		//out.println("<td> <a href=\"http://localhost:1234/login?status=NEWUSER\"> New Users! Signup.. </a></td>");
+		
+		out.println("<td> <a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=NEWUSER\"> New Users! Signup.. </a></td>");
+		
+		
 		out.println("</tr></table>");
 		
 	
@@ -306,7 +391,9 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("</TITLE>");
 		out.println("</HEAD>");
 		out.println("<BODY>");
-		out.println("<form action=\"http://localhost:1234/login\" method=\"POST\" >");
+		out.println("<form action=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\" method=\"POST\" >");
+		
+		//out.println("<td> <a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=NEWUSER\"> New Users! Signup.. </a></td>");
 		
 		if(status==1)
 		{
@@ -356,7 +443,8 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("<td><input type=\"submit\" value=\"Submit\" name=\"Submit\"></td>");
 		out.println("</tr><tr>");
 	
-		out.println("<td> <a href=\"http://localhost:1234/login\"> Back! </a></td>");
+		out.println("<td> <a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\"> Back! </a></td>");
+		
 		out.println("</tr></table>");
 		
 		out.println("</form>");
@@ -387,11 +475,11 @@ public class XPathClientServlet extends HttpServlet{
 		out.println("</TITLE>");
 		out.println("</HEAD>");
 		out.println("<BODY>");
-		out.println("<form action=\"http://localhost:1234/login\" method=\"POST\" >");
+		out.println("<form action=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\" method=\"POST\" >");
 		
 		
 		out.println("<h3>Welcome "+data.Name+"<h3>");
-		out.println("<a href=\"http://localhost:1234/login?status=LOGOUT\"> Logout </a>");
+		out.println("<a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=LOGOUT\"> Logout </a>");
 		
 		
 		out.println("<table>");
@@ -433,13 +521,15 @@ public class XPathClientServlet extends HttpServlet{
 		{
 			if(data.Channels.contains(temp.ID))
 			{
-				out.println("<tr>  <td><a href=\"http://localhost:1234/login?status=OPENCHANNEL&id="+temp.ID+"\"> Channel: "+temp.Name+" </a> </td>");
-				out.println("<td><a href=\"http://localhost:1234/login?status=DELETECHANNEL&id="+temp.ID+"\"> Delete </a> </td>");
+				out.println("<tr>  <td><a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=OPENCHANNEL&id="+temp.ID+"\"> Channel: "+temp.Name+" </a> </td>");
+				
+				out.println("<td><a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=DELETECHANNEL&id="+temp.ID+"\"> Delete </a> </td>");
+				
 				out.println("</tr>");
 			}
 			else
 			{
-				out.println("<tr>  <td><a href=\"http://localhost:1234/login?status=OPENCHANNEL&id="+temp.ID+"\"> Channel: "+temp.Name+" </a> </td>");
+				out.println("<tr>  <td><a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=OPENCHANNEL&id="+temp.ID+"\"> Channel: "+temp.Name+" </a> </td>");
 			}
 		}
 			
@@ -453,6 +543,8 @@ public class XPathClientServlet extends HttpServlet{
 	
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		this.request=request;
 		
 		if(request.getParameter("status").equalsIgnoreCase("NEWCRED"))
 		{
@@ -520,9 +612,25 @@ public class XPathClientServlet extends HttpServlet{
 		
 		else if(request.getParameter("status").equalsIgnoreCase("LOGIN"))
 		{
+			
+			
 			String Username=request.getParameter("username");
 			String Password=request.getParameter("password");
 			
+			
+			if(Username.equalsIgnoreCase("admin")&& Password.equalsIgnoreCase("adminadmin"))
+			{
+				System.out.println("ServerPort: "+request.getServerPort());
+				System.out.println("ServerName: "+request.getServerName());
+				System.out.println("Servlet: "+request.getRequestURI());
+				System.out.println("http://localhost:"+request.getServerPort()+request.getRequestURI());
+				
+				PrintWriter out=response.getWriter();
+				openAdminControl(out,0);
+			}
+			else
+			{
+				System.out.println("ENETERED NONDATA");
 			ServletConfig config = getServletConfig();
 			ServletContext context = config.getServletContext();
 			DB db= DB.getInstance(context.getInitParameter("BDBstore"));
@@ -543,7 +651,11 @@ public class XPathClientServlet extends HttpServlet{
 			session.setAttribute("user", obj);
 		       PrintWriter out=response.getWriter();
 		       successLogin(out,obj);
+			}
+			
 		}
+		
+		
 		else if(request.getParameter("status").equalsIgnoreCase("CHANNEL"))
 		{
 		
@@ -778,6 +890,161 @@ public class XPathClientServlet extends HttpServlet{
 		
 	}
 	*/
+		
+		
+	}
+	
+	
+	public void openAdminControl(PrintWriter out, int Status)
+	{
+	//	System.out.println(XPathCrawler.crawler);
+		if(XPathCrawler.crawler!=null || Status==5)
+		{
+			System.out.println("CRAWLER RUNNING");
+			out.println("<html>");
+			out.println("<head>");
+			out.println("<title>Admin Page</title>");
+			out.println("</head>");
+			out.println("<body>");
+			
+			out.println("<h1>CRAWLING!!</h1>");
+			out.println("<a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=STOPCRAWL\">STOP CRAWL and DISPLAY REPORT</a> ");
+			
+			out.println("</body>");
+			out.println("</html>");
+		}
+		else
+		{
+			out.println("<html>");
+			out.println("<head>");
+			out.println("<title>Admin Page</title>");
+			out.println("</head>");
+			out.println("<body>");
+			if(Status==1)
+			{
+				out.println("Error in giving data; the first two fields shouldn't be null");
+			}
+			else if(Status==2)
+			{
+				out.println("Error in giving data; Check size and # of files fields");
+			}
+			else if(Status==3)
+			{
+				out.println("Error in giving data; the number of files filed is not valid integer");
+			}
+			out.println("<form action=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\" method=\"GET\" >");
+			
+			out.println("<h1>NOT CRAWLING!!</h1>");
+			out.println("<table>");
+			
+			out.println("<tr>");
+			out.println("<td>Enter URL to crawl: </td>");
+			out.println("<td><input type=\"text\" name=\"URL2CRAWL\" size=\"30\"></td>");
+			out.println("</tr>");
+			
+			out.println("<tr>");
+			out.println("<td>Enter MaxSize: </td>");
+			out.println("<td><input type=\"text\" name=\"SIZE2CRAWL\" size=\"30\"></td>");
+			out.println("</tr>");
+			
+			out.println("<tr>");
+			out.println("<td>Enter MaxFiles: </td>");
+			out.println("<td><input type=\"text\" name=\"FILES2CRAWL\" size=\"30\"></td>");
+			out.println("</tr>");
+			
+			out.println("<tr>");
+			out.println("<td><input type=\"hidden\" name=\"status\" value=\"STARTCRAWL\"></td>");
+			out.println("</tr>");
+			
+			out.println("<tr>");
+			out.println("<input type=\"submit\" name=\"submit\" value=\"Start Crawl\">");
+			
+		//	out.println("<td><a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\"> HOME! </a> </td>");
+			out.println("</tr>");
+			
+			out.println("</table>");
+			
+			out.println("</form>");
+			out.println("</body>");
+			out.println("</html>");
+			
+			
+			System.out.println("CRAWLER NOT RUNNING");
+		}
+		//TODO: Crawler Web Interface!!
+		
+	}
+	
+	
+	
+	public void displayCrawlResult(PrintWriter out, XPathCrawler crawlData, String doc)
+	{
+		out.println("<html>");
+		out.println("<head>");
+		out.println("<title>");
+		out.println("Crawl Results");
+		out.println("</title>");
+		out.println("</head>");
+		out.println("<body>");
+		
+		out.println("<table>");
+		
+		out.println("<tr>");
+		out.println("<td><h2>Crawl Statistics: </h2></td>");
+		out.println("</tr>");
+	
+		out.println("<tr>");
+		out.println("<td>The Number of HTML Crawled Pages: </td>");
+		out.println("<td><b>"+crawlData.crawling.NumHtml+"</b></td>");
+		out.println("</tr>");
+	
+		out.println("<tr>");
+		out.println("<td>The Number of XML Crawled Docs: </td>");
+		out.println("<td><b>"+crawlData.crawling.NumXml+"</b></td>");
+		out.println("</tr>");
+		
+		out.println("<tr>");
+		out.println("<td>The Amount of data Downloaded: </td>");
+		out.println("<td><b>"+crawlData.findTotalSize(doc)+"</b></td>");
+		out.println("</tr>");
+		
+		out.println("<tr>");
+		out.println("<td>The Number of servers visited: </td>");
+		out.println("<td><b>"+crawlData.crawling.servers.size()+"</b></td>");
+		out.println("</tr>");
+		
+		out.println("<tr>");
+		out.println("<td><h3>Channel List: </h3></td></br>");
+		out.println("</tr>");
+		out.println("<tr></br></tr>");
+		
+		Hashtable<String,Integer> data=crawlData.findMatchedDocsSize(doc);
+		
+		for(String channel: data.keySet())
+		{
+			out.println("<tr>");
+			out.println("<td>Channel "+channel+"</td>");
+			out.println("<td><b>"+data.get(channel)+"</b></td>");
+			out.println("</tr>");
+			
+		}
+		
+		String s=null;
+		for(String s1: crawlData.crawling.servers.keySet())
+		{
+			s=s1;
+			break;
+		}
+		
+		out.println("<tr>");
+		out.println("<td>The servers which is maximum matches visited: </td>");
+		out.println("<td><b>"+s+"</b></td>");
+		out.println("</tr>");
+			
+		
+		out.println("</table>");
+		out.println("</body>");
+		out.println("</html>");
 		
 		
 	}

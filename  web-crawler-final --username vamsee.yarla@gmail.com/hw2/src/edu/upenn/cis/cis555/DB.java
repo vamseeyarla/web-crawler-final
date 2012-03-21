@@ -278,6 +278,24 @@ public class DB {
 		}
 	}
 	
+	
+	public boolean deleteCrawlData()
+	{
+		try{
+		   for(CrawlData d : CrawlIndex.entities())
+			{
+			CrawlIndex.delete(d.URL);
+			}
+		env.sync();
+		
+		return true;
+		}
+		catch(Exception e)
+		{
+			return false;	
+		}
+	}
+	
 	public boolean updateValues(HashMap<String,ArrayList<String>> XPaths)
 	{
 		System.out.println(XPaths);

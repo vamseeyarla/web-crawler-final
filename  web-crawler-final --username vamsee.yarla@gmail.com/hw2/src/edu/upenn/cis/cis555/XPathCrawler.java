@@ -18,14 +18,25 @@ import com.sleepycat.persist.EntityCursor;
  */
 public class XPathCrawler {
 
+	public static XPathCrawler crawler=null;
+	StartCrawl crawling=null;
+	boolean start=false;
+	
+	
 	public static void main(String[] args)
+	{
+		crawler=new XPathCrawler();
+		crawler.runCrawler(args);
+	//	crawler=null;
+	}
+	
+	public void runCrawler(String[] args)
 	{
 		String URL;
 		String Directory;
 		double MaxSize=10;
 		int NumFiles=-1;
-		
-		boolean start=true;
+		start=true;
 		
 		while(start)
 		{
@@ -130,7 +141,7 @@ public class XPathCrawler {
 		}
 		
 		//String XPath="/html/body";
-		StartCrawl crawling= new StartCrawl(URL,XPaths,MaxSize,Directory,NumFiles);
+		crawling= new StartCrawl(URL,XPaths,MaxSize,Directory,NumFiles);
 		crawling.URLCrawl(URL);
 		
 		XPaths=crawling.XPaths;
@@ -155,5 +166,45 @@ public class XPathCrawler {
 		
 		
 		}
+		//crawling=null;
 	}
+	
+	public boolean deleteCrawlData(String arg)
+	{
+		DB db=DB.getInstance(arg);
+		return db.deleteCrawlData();
+	}
+	
+	public double findTotalSize(String arg)
+	{
+		DB db=DB.getInstance(arg);
+		double total=0;
+		
+		for(CrawlData s: db.CrawlIndex.entities())
+		{
+			total=total+((s.Data.length()));
+		}
+		return total;
+			
+	}
+	
+	public Hashtable<String,Integer> findMatchedDocsSize(String arg)
+	{
+		DB db=DB.getInstance(arg);
+		
+		Hashtable<String,Integer> channel=new Hashtable<String,Integer>();
+		
+		for(ChannelData s: db.ChannelIndex.entities())
+		{
+			int total=0;
+			for(String xpath: s.XPaths.keySet())
+			{
+				total=total+(s.XPaths.get(xpath).size());
+			}
+			channel.put(s.ID+" : "+s.Name, total);
+		}
+		
+			return channel;
+	}
+	
 }
