@@ -59,13 +59,18 @@ public class XPathServlet extends HttpServlet{
 	
 		  showDefaultLogin(out,0);
 		}
-	
+	/*
+	 * This is for NEWUSER trying to create an account
+	 */
 		else if(request.getParameter("status").equalsIgnoreCase("NEWUSER"))
 		{
 			PrintWriter out=response.getWriter();
 			showNewUserSignUp(out,0);
 		}
 		
+		/*
+		 * This is for USER trying to logout of an account
+		 */
 		else if(request.getParameter("status").equalsIgnoreCase("LOGOUT"))
 		{
 			PrintWriter out=response.getWriter();
@@ -73,6 +78,9 @@ public class XPathServlet extends HttpServlet{
 			session.invalidate();
 			showDefaultLogin(out,2);
 		}
+		/*
+		 * This is for USER trying to delete a channel
+		 */
 		else if(request.getParameter("status").equalsIgnoreCase("DELETECHANNEL"))
 		{
 			String ID=request.getParameter("id");
@@ -100,6 +108,9 @@ public class XPathServlet extends HttpServlet{
 			successLogin(out, data);
 			
 		}
+		/*
+		 * This is for USER trying to open a channel
+		 */
 		else if(request.getParameter("status").equalsIgnoreCase("OPENCHANNEL"))
 		{
 			//TODO: display of the channel
@@ -207,6 +218,9 @@ public class XPathServlet extends HttpServlet{
 			out.println("</documentcollection>");
 			*/
 		}
+		/*
+		 * This is for ADMIN trying to start the carwling
+		 */
 		else if(request.getParameter("status").equalsIgnoreCase("STARTCRAWL"))
 		{
 			boolean status=true;
@@ -264,6 +278,9 @@ public class XPathServlet extends HttpServlet{
 			}
 		}
 		
+		/*
+		 * This is for ADMIN trying to stop the ongoing crawling
+		 */
 		else if(request.getParameter("status").equalsIgnoreCase("STOPCRAWL"))
 		{
 			HttpSession session = request.getSession();
@@ -323,6 +340,10 @@ public class XPathServlet extends HttpServlet{
 		
 }
 	
+	/*
+	 * Method to print the basic screen of the Default Login Page
+	 * or HomePage
+	 */
 	
 	public void showDefaultLogin(PrintWriter out, int status)
 	{
@@ -382,6 +403,10 @@ public class XPathServlet extends HttpServlet{
 		
 	}
 	
+	/*
+	 * Method to print the basic screen of the New User Signup
+	 * or SignUpPage
+	 */
 	public void showNewUserSignUp(PrintWriter out, int status)
 	{
 		out.println("<HTML>");
@@ -452,17 +477,12 @@ public class XPathServlet extends HttpServlet{
 		out.println("</HTML>");
 	}
 	
+
 	/*
-	 * (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 
-	 *This function is called whenever the post method is checked in the form. 
-	 *It takes the inputs from the user and calls appropriate functions for XPATH 
-	 *Validation and also creating the DOM representations and calling the evaluate 
-	 *function to verify whether the XPaths conform to the file provided as the URL.
-	 *
+	 * 
+	 * This function gets activated whenever a valid user neters the system
+	 * Displays his customized screen to the user.
 	 */
-	
 	
 	public void successLogin(PrintWriter out, UserData data)
 	{
@@ -542,6 +562,16 @@ public class XPathServlet extends HttpServlet{
 		out.println("</HTML>");
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 
+	 *This function is called whenever the post method is checked in the form. 
+	 *It takes the inputs from the user and calls appropriate functions for XPATH 
+	 *Validation and also creating the DOM representations and calling the evaluate 
+	 *function to verify whether the XPaths conform to the file provided as the URL.
+	 *
+	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
@@ -896,6 +926,10 @@ public class XPathServlet extends HttpServlet{
 	}
 	
 	
+	/*
+	 * Function to open the Admin Page; for his control of crawling and other activities.
+	 */
+	
 	public void openAdminControl(PrintWriter out, int Status)
 	{
 	//	//System.out.println(XPathCrawler.crawler);
@@ -982,6 +1016,9 @@ public class XPathServlet extends HttpServlet{
 	}
 	
 	
+	/*
+	 * Function to display the crawled results to the Admin.
+	 */
 	
 	public void displayCrawlResult(PrintWriter out, XPathCrawler crawlData, String doc)
 	{
