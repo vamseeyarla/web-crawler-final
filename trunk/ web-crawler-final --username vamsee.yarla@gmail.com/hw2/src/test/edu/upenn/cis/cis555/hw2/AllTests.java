@@ -11,6 +11,7 @@ public class AllTests {
 		suite.addTestSuite(XPathEngineTest.class);
 		suite.addTestSuite(HttpClientTest.class);
 		suite.addTestSuite(DBTests.class);
+		suite.addTestSuite(WebCrawlerTest.class);
 		
 		//$JUnit-END$
 		return suite;
