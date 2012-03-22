@@ -67,7 +67,7 @@ gmail
       <description>
         This is a simple demonstration servlet.
       </description>
-      <servlet-class>edu.upenn.cis.cis555.XPathClientServlet</servlet-class>
+      <servlet-class>edu.upenn.cis.cis555.XPathServlet</servlet-class>
       <load-on-startup/>
     </servlet>
 
