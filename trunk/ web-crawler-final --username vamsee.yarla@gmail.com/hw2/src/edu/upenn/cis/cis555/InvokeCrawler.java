@@ -18,7 +18,7 @@ public class InvokeCrawler extends Thread {
 		if(XPathCrawler.crawler!=null)
 		{
 			running=false;
-			System.out.println("Crawler NOT FREE!! SLEEPING OVER");
+			//System.out.println("Crawler NOT FREE!! SLEEPING OVER");
 			try{
 			Thread.sleep(5);
 			}
@@ -34,11 +34,11 @@ public class InvokeCrawler extends Thread {
 			XPathCrawler.crawler=new XPathCrawler();
 			crawlObj=XPathCrawler.crawler;
 			crawlObj.deleteCrawlData(args[1]);
-			System.out.println("CRAWL DATA DELETED");
+			//System.out.println("CRAWL DATA DELETED");
 			crawlObj.runCrawler(args);
 			
 			running=false;
-			System.out.println("FINISHED WITH CRAWLER");
+			//System.out.println("FINISHED WITH CRAWLER");
 		}
 		
 	}

@@ -54,7 +54,7 @@ URLFrontier frontier;
 			XPathsList[i]=temp;
 			i++;
 		}
-		System.out.println("XPATHS:  :"+ XPaths);
+		//System.out.println("XPATHS:  :"+ XPaths);
 		engine=new XPathEngine(XPathsList);
 		
 	//	subURLs=new ArrayList<String>();
@@ -66,21 +66,21 @@ URLFrontier frontier;
 		DB db=DB.getInstance(Directory);
 		if(XPaths.size()==0)
 		{
-			System.out.println("NO XPaths to look for!");
+			//System.out.println("NO XPaths to look for!");
 			return;
 		}
 		boolean state=true;
 
-		System.out.println("URL:     "+URL);
+		//System.out.println("URL:     "+URL);
 	 
 		HttpClient client=new HttpClient(URL,MaxSize,db.getURLTimestamp(URL));	
 		ByteArrayOutputStream stream=client.fetchData();
 		
 		if(stream==null)
 		{
-			System.out.println("Null File");
-			//db.updateCrawlData(URL,System.currentTimeMillis(),null);
-		    System.out.println("PROBLEM WITH URL OR NULL URL FROM HTTP CLIENT");
+			//System.out.println("Null File");
+			//db.updateCrawlData(URL,//System.currentTimeMillis(),null);
+		    //System.out.println("PROBLEM WITH URL OR NULL URL FROM HTTP CLIENT");
 			//state=false;
 			//	return;
 		}
@@ -95,7 +95,7 @@ URLFrontier frontier;
 		while(state)
 		{
 			String content;
-			System.out.println("CON TYPE:    "+client.ConType);
+			//System.out.println("CON TYPE:    "+client.ConType);
 			
 			if(client.ConType.equalsIgnoreCase("XML"))
 			{
@@ -107,7 +107,7 @@ URLFrontier frontier;
 			}
 		      if(stream.toString().equalsIgnoreCase("NOTMODIFIED"))
 		      {
-		    	  System.out.println("NOT MODIFIED");
+		    	  //System.out.println("NOT MODIFIED");
 		     	  content=db.getCrawledURLData(URL);
 		    	  
 		    	  stream=new ByteArrayOutputStream();
@@ -130,11 +130,11 @@ URLFrontier frontier;
 		          boolean contentSeen=ContentSeenTest.isContentSeen(content, Directory);
 		          if(contentSeen)
 		          {
-		        	  System.out.println("OLD CONTENT: Content has already been seen");
+		        	  //System.out.println("OLD CONTENT: Content has already been seen");
 		          }
 		          else
 		          {
-		        	  System.out.println("NEW CONTENT: Content has not not seen before");
+		        	  //System.out.println("NEW CONTENT: Content has not not seen before");
 		          }
 		      }
 		
@@ -155,7 +155,7 @@ URLFrontier frontier;
 		
 		if(root==null)
 		{
-			System.out.println("PROBLEM WITH ROOT FROM XPathCRAWLER");
+			//System.out.println("PROBLEM WITH ROOT FROM XPathCRAWLER");
 			break;
 		}
 		
@@ -169,7 +169,7 @@ URLFrontier frontier;
 		{
 			db.updateCrawlData(URL,System.currentTimeMillis(),content);
 			
-			System.out.println("TRUE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
+			//System.out.println("TRUE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
 			//TODO Save the URL and content in Berkeley DB
 			ArrayList<String> temp=XPaths.get(XPathsList[iterator]);
 			temp.add(URL);
@@ -178,7 +178,7 @@ URLFrontier frontier;
 		}
 		else
 		{
-			System.out.println("FALSE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
+			//System.out.println("FALSE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
 		}
 		}
 		
@@ -243,7 +243,7 @@ URLFrontier frontier;
 			CurPos=pos+1;
 		}
 	//	System.out.println("GMAIl");
-		System.out.println(frontier);
+		//System.out.println(frontier);
 	//	System.out.println("GMAIL@");
 		
 		state=false;
@@ -295,13 +295,13 @@ URLFrontier frontier;
 		
 		if(client.crawl_delay.containsKey(agent))
 		{
-			System.out.println("GOING TO SLEEP FOR: "+client.crawl_delay.get(agent));
+			//System.out.println("GOING TO SLEEP FOR: "+client.crawl_delay.get(agent));
 		try{
 			Thread.sleep(Integer.parseInt(client.crawl_delay.get(agent)));
 			}
 			catch(Exception e)
 			{
-				System.out.println("CRAWL DELAY THREAD INTERRUPTED");
+				//System.out.println("CRAWL DELAY THREAD INTERRUPTED");
 			}
 		}
 		
@@ -331,7 +331,7 @@ URLFrontier frontier;
 			accessed++;
 			if(NumFiles!=-1 && accessed==NumFiles)
 			{
-				System.out.println("TOTAL:   "+accessed);
+				//System.out.println("TOTAL:   "+accessed);
 				return;
 			}
 			URLCrawl(link);

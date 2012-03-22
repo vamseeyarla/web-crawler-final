@@ -75,15 +75,15 @@ public HttpClient(String URL,double MaxSize, String Timestamp)
 
 public ByteArrayOutputStream fetchData()
 {
-	System.out.println("URL in FETCHDATA:  "+URL);
+	//System.out.println("URL in FETCHDATA:  "+URL);
 	if(URL=="" || URL==null)
 	{
-		System.out.println("EXPECTED0");
+		//System.out.println("EXPECTED0");
 		outBytes=null;
 	}
 	else if(URL.indexOf("http://")==0 || URL.indexOf("HTTP://")==0)
 	{
-		System.out.println("EXPECTED1");
+		//System.out.println("EXPECTED1");
 		String address;
 		String request;
 		String port="80";
@@ -109,7 +109,7 @@ public ByteArrayOutputStream fetchData()
 			request=request.trim();
 			if((address =="" && request=="") || address=="")
 			{
-				System.out.println("EXPECTED");
+				//System.out.println("EXPECTED");
 				return null;
 			}
 			else
@@ -146,7 +146,7 @@ public ByteArrayOutputStream fetchData()
 				String firstHeadRobot=br.readLine();
 				if(firstHeadRobot.indexOf("404")!=-1 || firstHeadRobot.indexOf("500")!=-1)
 				{
-					System.out.println("NO ROBOTS");
+					//System.out.println("NO ROBOTS");
 					//NO ROBOTS.TXT AT SERVER
 					
 				}
@@ -168,13 +168,13 @@ public ByteArrayOutputStream fetchData()
 						String[] split=presentLine.split(":");
 							if(split.length<2)
 							{
-							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							//System.out.println("FORMAT OF ROBOTS NOT CORRECT");
 							robots=null;
 							break;
 							}
 						split[1]=split[1].trim();
 						UserAgent=split[1];
-						System.out.println("User-Agent: #"+split[1]);
+						//System.out.println("User-Agent: #"+split[1]);
 						if(!robots.containsKey(split[1]))
 						{
 						ArrayList<String> data=new ArrayList<String>();
@@ -184,7 +184,7 @@ public ByteArrayOutputStream fetchData()
 						}
 						catch(Exception e)
 						{
-							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							//System.out.println("FORMAT OF ROBOTS NOT CORRECT");
 							robots=null;
 							break;
 						}
@@ -217,7 +217,7 @@ public ByteArrayOutputStream fetchData()
 						}
 						if(UserAgent==null)
 						{
-							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							//System.out.println("FORMAT OF ROBOTS NOT CORRECT");
 							robots=null;
 							break;
 						}
@@ -226,7 +226,7 @@ public ByteArrayOutputStream fetchData()
 						{
 							split[1]=split[1].substring(0,split[1].indexOf("#")).trim();
 						}
-						System.out.println("Disallow: #"+split[1]);
+						//System.out.println("Disallow: #"+split[1]);
 						ArrayList<String> set=robots.get(UserAgent);
 						set.add(split[1]);
 						robots.put(UserAgent, set);
@@ -234,7 +234,7 @@ public ByteArrayOutputStream fetchData()
 						}
 						catch(Exception e)
 						{
-							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							//System.out.println("FORMAT OF ROBOTS NOT CORRECT");
 							robots=null;
 							break;
 						}
@@ -246,7 +246,7 @@ public ByteArrayOutputStream fetchData()
 						
 						if(split.length!=2 && split[1].trim().equalsIgnoreCase(""))
 						{
-							System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+							//System.out.println("FORMAT OF ROBOTS NOT CORRECT");
 							robots=null;
 							break;
 						}
@@ -255,13 +255,13 @@ public ByteArrayOutputStream fetchData()
 							split[1]=split[1].trim();
 							if(UserAgent==null)
 							{
-								System.out.println("FORMAT OF ROBOTS NOT CORRECT");
+								//System.out.println("FORMAT OF ROBOTS NOT CORRECT");
 								robots=null;
 								break;
 							}
 							else
 							{	
-								System.out.println("Crawl_Delay: #"+split[1]);
+								//System.out.println("Crawl_Delay: #"+split[1]);
 								
 								crawl_delay.put(UserAgent, split[1]);
 							}
@@ -271,14 +271,14 @@ public ByteArrayOutputStream fetchData()
 					
 		           							
 					//TODO: Write code for Crawl-delay
-					System.out.println("ONE STEP length: "+presentLine.length());
+					//System.out.println("ONE STEP length: "+presentLine.length());
 				}
-					System.out.println("CAME OUT");
+					//System.out.println("CAME OUT");
 				}
 				br.close();
 				out.close();
 				socket.close();
-				System.out.println("PARSING ROBOTS.txt FINISHED");
+				//System.out.println("PARSING ROBOTS.txt FINISHED");
 				//CHECK WHETHER THE REQUEST IS IN COMPLAINCE WITH ROBOTS.TXT
 				
 				if(robots!=null)
@@ -304,7 +304,7 @@ public ByteArrayOutputStream fetchData()
 						}
 					}
 				}
-					System.out.println("CLEARED ROBOTS");
+					//System.out.println("CLEARED ROBOTS");
 					
 				/*
 				 * SEND HEAD REQ's TO CHECK THE INCOMING FORMAT!!
@@ -319,7 +319,7 @@ public ByteArrayOutputStream fetchData()
 				{
 					request="/";
 				}
-				System.out.println("REQ    :"+request);
+				//System.out.println("REQ    :"+request);
 				out.write(("HEAD "+request+" HTTP/1.1\n").getBytes());
 				out.write(("Host: "+address+"\n").getBytes());
 				if(Timestamp!=null)
@@ -331,10 +331,10 @@ public ByteArrayOutputStream fetchData()
 				
 				
 				String firstHeadHEAD=br.readLine();
-				System.out.println(firstHeadHEAD);
+				//System.out.println(firstHeadHEAD);
 				if(firstHeadHEAD.indexOf("404")!=-1 || firstHeadHEAD.indexOf("500")!=-1 || firstHeadHEAD.indexOf("301")!=-1 || firstHeadHEAD.indexOf("403")!=-1)
 				{
-					System.out.println("TRACK2");
+					//System.out.println("TRACK2");
 					////System.out.println("SERVER ERROR AT REMOTE LOCATION");
 					/*
 					outBytes=new ByteArrayOutputStream();
@@ -352,7 +352,7 @@ public ByteArrayOutputStream fetchData()
 				*/
 				else
 				{
-					System.out.println("TRACK3");
+					//System.out.println("TRACK3");
 					//String contentLength=null;
 					String contentType=null;
 					String contentLength=null;
@@ -375,12 +375,12 @@ public ByteArrayOutputStream fetchData()
 					    if(contentType.indexOf("Content-Type:")!=-1)
 					    {
 					////System.out.println("ENTERED CONTENT-TYPE");
-					System.out.println(URL+"     "+contentType);
+					//System.out.println(URL+"     "+contentType);
 					String type=contentType.substring(contentType.indexOf(":")+1,contentType.length()).trim();
 					
 					if(type.indexOf("xml")!=-1 || type.indexOf("XML")!=-1)
 					{
-						System.out.println("VA0");
+						//System.out.println("VA0");
 						ConType="XML";
 						
 					}
@@ -392,7 +392,7 @@ public ByteArrayOutputStream fetchData()
 					*/
 					else if(type.indexOf("html")!=-1 || type.indexOf("HTML")!=-1)
 					{
-						System.out.println("VA1");
+						//System.out.println("VA1");
 						ConType="HTML";
 						
 					}
@@ -422,8 +422,8 @@ public ByteArrayOutputStream fetchData()
 									 */
 									return null;
 								}
-								System.out.println("CONTENT LENGTH: "+ConLength);
-								System.out.println("PASSED CONTENT LENGTH");
+								//System.out.println("CONTENT LENGTH: "+ConLength);
+								//System.out.println("PASSED CONTENT LENGTH");
 							}
 					    }
 					}
@@ -486,7 +486,7 @@ public ByteArrayOutputStream fetchData()
 					request=request.substring(0,request.length()-1);
 				}
 				Link=request;
-				System.out.println("TRACK1");
+				//System.out.println("TRACK1");
 				
 				
 			
@@ -542,14 +542,14 @@ public ByteArrayOutputStream fetchData()
 					
 					
 					
-					System.out.println("VA3");
+					//System.out.println("VA3");
 					outBytes=new ByteArrayOutputStream();
 					while((x=br.read())!=-1)
 					{
 						outBytes.write(x);
 					}
 					
-					System.out.println("krishna");
+					//System.out.println("krishna");
 					/*
 					System.out.println("INDEX:   "+outBytes.toString().indexOf("<!DOCTYPE"));
 					if(outBytes.toString().indexOf("<!DOCTYPE")<15)
@@ -569,7 +569,7 @@ public ByteArrayOutputStream fetchData()
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+				//	e.printStackTrace();
 					return null;		
 				}
 				finally
@@ -608,13 +608,13 @@ public ByteArrayOutputStream fetchData()
 		catch(Exception e)
 		{
 			//System.out.println("Error in reading file");
-			e.printStackTrace();
+			//e.printStackTrace();
 			outBytes=new ByteArrayOutputStream();
 			try {
 				outBytes.write("404".getBytes());
 			} catch (IOException e1) {
 				//  Auto-generated catch block
-				e1.printStackTrace();
+			//	e1.printStackTrace();
 			}
 			return outBytes;
 			//return null;

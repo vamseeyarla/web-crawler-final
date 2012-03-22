@@ -13,7 +13,7 @@ public class delete {
 	{
 		
 		DB db=DB.getInstance("JEDB");
-		System.out.println(db.deleteData());
+		//System.out.println(db.deleteData());
 		
 	}
 }

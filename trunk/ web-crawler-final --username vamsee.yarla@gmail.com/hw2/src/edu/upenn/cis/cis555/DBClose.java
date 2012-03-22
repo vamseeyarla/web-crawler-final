@@ -31,22 +31,22 @@ public class DBClose extends Thread {
 			if(env!=null)
 			{
 				
-				System.out.println("Stage1");
+				//System.out.println("Stage1");
 				user_store.close();
-				System.out.println("Stage2");
+				//System.out.println("Stage2");
 				channel_store.close();
-				System.out.println("Stage3");
+				//System.out.println("Stage3");
 				crawl_store.close();
-				System.out.println("Stage4");
+				//System.out.println("Stage4");
 				env.cleanLog();
-				System.out.println("Stage5");
+				//System.out.println("Stage5");
 				env.close();
-				System.out.println("Database Closed");
+				//System.out.println("Database Closed");
 			}
 			}
 		catch(Exception e)
 		{
-			System.out.println("Database not closed properly");
+			//System.out.println("Database not closed properly");
 		}
 	}
 }

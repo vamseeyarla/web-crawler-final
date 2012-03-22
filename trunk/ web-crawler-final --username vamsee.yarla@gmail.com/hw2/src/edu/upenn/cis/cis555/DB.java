@@ -40,7 +40,7 @@ public class DB {
 		db=new DB(Directory);
 		if(!db.init())
 		{
-			System.out.println("FAIL INIT");
+			//System.out.println("FAIL INIT");
 			db=null;
 		}
 		}
@@ -58,11 +58,11 @@ public class DB {
 		
 		if(success)
 		{
-			System.out.println("Created the DB Directory");
+			//System.out.println("Created the DB Directory");
 				}
 		else
 		{
-			System.out.println("Cannot Create the DB Directory");
+			//System.out.println("Cannot Create the DB Directory");
 			
 		}
 		}
@@ -100,8 +100,8 @@ public class DB {
 		catch(Exception e)
 		{
 			
-			System.out.println(e.toString());
-			System.out.println("Error in Connecting to Berkeley DB");
+			//System.out.println(e.toString());
+			//System.out.println("Error in Connecting to Berkeley DB");
 			return false;
 		}
 		
@@ -147,7 +147,7 @@ public class DB {
 	{
 		EntityCursor<ChannelData> channeldata= db.ChannelIndex.entities();
 		int Max=0;
-		System.out.println("CHANNEL STATUS:  "+channeldata);
+		//System.out.println("CHANNEL STATUS:  "+channeldata);
 		if(channeldata==null)
 		{
 			env.sync();
@@ -174,13 +174,13 @@ public class DB {
 			data.Password=Password;
 			data.Channels=new ArrayList<String>();		
 			db.UserIndex.put(data);	
-			System.out.println("New User Success");
+			//System.out.println("New User Success");
 			env.sync();
 			return true;
 		}
 		catch(Exception e)
 		{
-			System.out.println("Error in creating New User");
+			//System.out.println("Error in creating New User");
 			env.sync();
 			return false;
 		}
@@ -192,14 +192,14 @@ public class DB {
 	try{
 			
 			db.ChannelIndex.put(data);	
-			System.out.println("New Channel Success");
+			//System.out.println("New Channel Success");
 			env.sync();
 			return true;
 		}
 		catch(Exception e)
 		{
 			env.sync();
-			System.out.println("Error in creating New Channel");
+			//System.out.println("Error in creating New Channel");
 			return false;
 		}
 	}
@@ -225,7 +225,7 @@ public class DB {
 	
 	public boolean deleteChannel(String ID)
 	{
-		System.out.println(db.ChannelIndex.get(ID).Name);
+		//System.out.println(db.ChannelIndex.get(ID).Name);
 		if(db.ChannelIndex.delete(ID))
 		{
 		env.sync();
@@ -298,7 +298,7 @@ public class DB {
 	
 	public boolean updateValues(HashMap<String,ArrayList<String>> XPaths)
 	{
-		System.out.println(XPaths);
+		//System.out.println(XPaths);
 		
 		for(ChannelData data: ChannelIndex.entities())
 		{

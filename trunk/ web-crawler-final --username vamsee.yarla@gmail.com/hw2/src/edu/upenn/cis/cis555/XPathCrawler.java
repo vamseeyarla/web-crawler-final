@@ -61,14 +61,14 @@ public class XPathCrawler {
 			
 			if(!status || !f.isFile())
 			{
-				System.out.println("The Passed directory is not a valid path! Program terminated");
+				//System..out.println("The Passed directory is not a valid path! Program terminated");
 				break;
 			}
 			if(!f.exists())
 			{
 				if(!f.mkdirs())
 				{
-					System.out.println("Couldn't create the directory structure! Program terminated");
+					System..out.println("Couldn't create the directory structure! Program terminated");
 					break;
 				}
 			}
