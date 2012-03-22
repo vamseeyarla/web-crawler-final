@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.w3c.dom.Document;
+import org.w3c.tidy.Tidy;
 
 /**
  * @author VamseeKYarlagadda
@@ -76,7 +77,11 @@ URLFrontier frontier;
 	 *  */
 	public void URLCrawl(String URL)
 	{
-	
+		
+		
+		String agent=null;	
+		
+		
 		DB db=DB.getInstance(Directory);
 		if(XPaths.size()==0)
 		{
@@ -104,7 +109,46 @@ URLFrontier frontier;
 	/*	HttpClient client=new HttpClient(URL,MaxSize,db.getURLTimestamp(URL));	
 		ByteArrayOutputStream stream=client.fetchData();
 		*/
+	String host = null;
 	
+			if(client.crawl_delay.containsKey(client.useragent))
+			{
+				agent=client.useragent;
+			}
+			else
+			{
+				agent="*";
+			}
+			
+			if(client.Hostname!=null)
+			{
+			if(servers.containsKey(client.Hostname))
+			{
+				host=client.Hostname;
+				//servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
+			}
+			else
+			{
+				boolean match=false;
+				for(String s: servers.keySet())
+				{
+					if(client.Hostname.indexOf(s)!=-1)
+					{
+						host=s;
+						match=true;
+						//servers.put(s, String.valueOf(System.currentTimeMillis()));
+						break;
+					}
+				}
+				
+				if(!match)
+				{
+					host=client.Hostname;
+					servers.put(client.Hostname, String.valueOf(0));
+				}
+			}
+			}
+			
 		
 		while(state)
 		{
@@ -152,12 +196,12 @@ URLFrontier frontier;
 		          }
 		      }
 		
-		//TODO: Update CrawlData
+		
 		
 		//  db.updateCrawlData(URL,System.currentTimeMillis(),content);
 		
 	/*	
-		//TODO MIGHT DO MD5 TO CHECK IF CONTENT IS ALREADY PARSED OR NOT.
+		
 		System.out.println("VAMSEE");
 		System.out.println(stream.toString());
 		System.out.println(client.ConType);
@@ -183,8 +227,12 @@ URLFrontier frontier;
 		{
 			db.updateCrawlData(URL,System.currentTimeMillis(),content);
 			
+			if(client.Hostname!=null && client.ConType.equalsIgnoreCase("XML")){
+			servers.put(host,String.valueOf(Integer.parseInt(servers.get(host))+1));
+			}
+			
 			//System.out.println("TRUE FOR: "+XPathsList[iterator]+"  FOR URL:  "+URL);
-			//TODO Save the URL and content in Berkeley DB
+		
 			ArrayList<String> temp=XPaths.get(XPathsList[iterator]);
 			temp.add(URL);
 			XPaths.put(XPathsList[iterator],temp);
@@ -231,7 +279,7 @@ URLFrontier frontier;
 			
 			if(suburl.indexOf("http")==0||suburl.indexOf("HTTP")==0)
 			{
-				//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
+				
 				//subURLs.add(suburl);	
 				frontier.put(suburl);
 			}
@@ -240,14 +288,14 @@ URLFrontier frontier;
 			//	System.out.println("YAHOO");
 				if(client.Link.equalsIgnoreCase("/"))
 				{
-					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
+				
 				//subURLs.add("http://".concat(client.Hostname).concat("/").concat(suburl));
 				
 				frontier.put("http://".concat(client.Hostname).concat("/").concat(suburl));
 				}
 				else
 				{
-					//TODO: CHECK IF URL HAS ALREADY BEEN PARSED
+					
 			//	subURLs.add("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));	
 				frontier.put("http://".concat(client.Hostname).concat(client.Link).concat("/").concat(suburl));
 				
@@ -270,44 +318,11 @@ URLFrontier frontier;
 		//last_accessed_time=System.currentTimeMillis();
 		
 		
-		String agent;
+	
+	
 		
-		if(client.crawl_delay.containsKey(client.useragent))
-		{
-			agent=client.useragent;
-		}
-		else
-		{
-			agent="*";
-		}
 		
-		if(client.Hostname!=null)
-		{
-		if(servers.containsKey(client.Hostname))
-		{
-			servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
-		}
-		else
-		{
-			boolean match=false;
-			for(String s: servers.keySet())
-			{
-				if(client.Hostname.indexOf(s)!=-1)
-				{
-					match=true;
-					servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
-					break;
-				}
-			}
-			
-			if(!match)
-			{
-				servers.put(client.Hostname, String.valueOf(System.currentTimeMillis()));
-			}
-		}
-		}
-		
-		if(client.crawl_delay.containsKey(agent))
+		if(agent!=null && client.crawl_delay.containsKey(agent))
 		{
 			//System.out.println("GOING TO SLEEP FOR: "+client.crawl_delay.get(agent));
 		try{
