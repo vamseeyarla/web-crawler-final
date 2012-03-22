@@ -29,6 +29,12 @@ public class XPathCrawler {
 		crawler.runCrawler(args);
 	//	crawler=null;
 	}
+	/*
+	 * 
+	 * This method acts as the starting method of all crawling. IT takes 4 inputs; URL, DB
+	 * location, Max sixe of file, MAx number of files and actvates the crawling assocuiated with this 
+	 * inputs.
+	 */
 	
 	public void runCrawler(String[] args)
 	{
@@ -164,11 +170,22 @@ public class XPathCrawler {
 		//crawling=null;
 	}
 	
+	/*
+	 * 
+	 * This method deletes all the crawled data in the DB before; thereby 
+	 * making the results of the Admin run crawling more realistic
+	 */
 	public boolean deleteCrawlData(String arg)
 	{
 		DB db=DB.getInstance(arg);
 		return db.deleteCrawlData();
 	}
+	
+	/*
+	 * 
+	 * This method takes the DB locationa nd chekcs all the size of the URLs fetched and thus stored in the DB.
+	 * Used by ADMIN statistics
+	 */
 	
 	public double findTotalSize(String arg)
 	{
@@ -183,6 +200,12 @@ public class XPathCrawler {
 			
 	}
 	
+	/*
+	 * 
+	 * This method takes the DB location and checks all the matched Xpaths with their URLs 
+	 * and calcualtes the count of each channel and return it.
+	 * Used by ADMIN statistics
+	 */
 	public Hashtable<String,Integer> findMatchedDocsSize(String arg)
 	{
 		DB db=DB.getInstance(arg);

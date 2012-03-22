@@ -134,6 +134,8 @@ public ByteArrayOutputStream fetchData()
 				
 				/*
 				 * Check for the status of the Robots.txt file
+				 * If it is present; then parse the data
+				 * or proceed without minding for robots.txt at all
 				 */
 							
 				out.write(("GET "+"/robots.txt"+" HTTP/1.1\n").getBytes());
@@ -315,6 +317,15 @@ public ByteArrayOutputStream fetchData()
 				out=(socket.getOutputStream());
 				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
+				
+				/*
+				 * Check for the status of the HEAD request for the file
+				 * If it is present; then parse the data
+				 * or and check for length and type of the content and proceed
+				 * further.
+				 */
+				
+				
 				if(request.trim().equalsIgnoreCase(""))
 				{
 					request="/";
@@ -455,7 +466,13 @@ public ByteArrayOutputStream fetchData()
 				out=(socket.getOutputStream());
 				br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
-			
+				/*
+				 * Check for the status of the GET request for the file
+				 * If it is present; then parse the data
+				 * or and check for length and type of the content and proceed
+				 * further.
+				 */
+				
 				if(request.trim().equalsIgnoreCase(""))
 				{
 					request="/";

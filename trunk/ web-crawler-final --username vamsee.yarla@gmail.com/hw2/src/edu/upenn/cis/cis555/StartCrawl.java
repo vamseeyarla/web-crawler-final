@@ -32,6 +32,14 @@ boolean terminate=false;
 HashMap<String,String> servers=new HashMap<String,String>();
 URLFrontier frontier;
 
+/*
+ * 
+ * Constructir which takes all the values to loads the methods of 
+ * this class. It takes all the list of xpaths to be crawled
+ * and the url to be starting with and also the max sixe 
+ * of the file to lookm ut for and aslo the maximum number 
+ * of files to be extracted.
+ */
 	StartCrawl(String URL, HashMap<String,ArrayList<String>> XPaths, Double MaxSize,String Directory,int NumFiles)
 	{
 		/*
@@ -60,6 +68,12 @@ URLFrontier frontier;
 	//	subURLs=new ArrayList<String>();
 	}
 	
+	
+	/*
+	 * URLCrawl method that takes the input of the URL and check with the all the
+	 * XPaths given and if anything matches; it proceeds to updation of the
+	 * HashList and proceed with the derived links from it.
+	 *  */
 	public void URLCrawl(String URL)
 	{
 	
