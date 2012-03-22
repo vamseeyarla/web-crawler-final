@@ -113,14 +113,14 @@ public class XPathEngine {
 	
 		if(client.ConType==null)
 		{
-			System.out.println("PROB IN CREATEDOM 1");
+			//System..out.println("PROB IN CREATEDOM 1");
 			return null;
 		}
 		else if(client.ConType.equalsIgnoreCase("XML"))
 		{
-			System.out.println("PROB IN CREATEDOM 2");
+			//System..out.println("PROB IN CREATEDOM 2");
 			
-			System.out.println("XML");
+			//System..out.println("XML");
 			DocumentBuilderFactory doc=null;
 			DocumentBuilder docBuilder=null;
 			Document docHead=null;
@@ -132,16 +132,16 @@ public class XPathEngine {
 		         docBuilder = doc.newDocumentBuilder();
 	    
 		ByteArrayInputStream stream=new ByteArrayInputStream(outStream.toByteArray());
-		System.out.println("XML1");
+		//System..out.println("XML1");
 		
-		//System.out.println(outStream.toString());
+		////System..out.println(outStream.toString());
 		
 	        docHead = docBuilder.parse(stream);
-	        System.out.println("XML2");
+	        //System..out.println("XML2");
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+				//	e.printStackTrace();
 					docHead=null;
 				}
 				
@@ -150,18 +150,18 @@ public class XPathEngine {
 		}
 		else if(client.ConType.equalsIgnoreCase("HTML"))
 		{
-			System.out.println("PROB IN CREATEDOM 3");
+			//System..out.println("PROB IN CREATEDOM 3");
 			
 			Document docHead=null;
 		
 			try{
-				System.out.println("PROB IN CREATEDOM 4");
+				//System..out.println("PROB IN CREATEDOM 4");
 			ByteArrayInputStream stream=new ByteArrayInputStream(outStream.toByteArray());
 			Tidy tidy=new Tidy();
-			System.out.println("PROB IN CREATEDOM 5");
+			//System..out.println("PROB IN CREATEDOM 5");
 			tidy.setTidyMark(false);
 			tidy.setShowWarnings(false);
-			System.out.println(stream.toString());
+			//System..out.println(stream.toString());
 			docHead=tidy.parseDOM(stream, System.out);
 			}
 			catch(Exception e)
