@@ -19,6 +19,8 @@ XPathCrawler--Class that starts the procedure for starting crawler; takes multip
 XPathEngineTest-- Class used for testing XPathEngine against JUnit tests
 HttpClientTest-- Class used for testing HttpClient against JUnit tests
 AllTests-- Class used to invoke all the test classes.
+DBTests--Class that tests DB connections and other DB related data
+WebCrawlerTest--Class that checks proper execution of web crawler
 
 Extra credits claimed:
 6.4: Crawler Web Interface:  UserId:"admin"; Password:"adminadmin"
@@ -42,6 +44,8 @@ List of source files included (consider using `find src | grep java`)
   src/test/edu/upenn/cis/cis555/hw2/AllTests.java
   src/test/edu/upenn/cis/cis555/hw2/HttpClientTest.java
   src/test/edu/upenn/cis/cis555/hw2/XPathEngineTest.java
+  src/test/edu/upenn/cis/cis555/hw2/DBTests.java
+  src/test/edu/upenn/cis/cis555/hw2/WebCrawlerTest.java
   
 
 Outside sources used:
