@@ -95,7 +95,8 @@ URLFrontier frontier;
 		HttpClient client=new HttpClient(URL,MaxSize,db.getURLTimestamp(URL));	
 		ByteArrayOutputStream stream=client.fetchData();
 		
-		if(stream==null)
+		System.out.println("CONTYPE: "+client.ConType);
+		if(stream==null || client.ConType==null)
 		{
 			//System.out.println("Null File");
 			//db.updateCrawlData(URL,//System.currentTimeMillis(),null);
