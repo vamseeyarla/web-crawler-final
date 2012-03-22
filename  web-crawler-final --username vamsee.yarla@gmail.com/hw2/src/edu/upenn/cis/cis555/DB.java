@@ -22,7 +22,7 @@ public class DB {
 	EntityStore storeCrawl;
 	PrimaryIndex <String, UserData> UserIndex;
 	PrimaryIndex <String, ChannelData> ChannelIndex;
-	PrimaryIndex <String, CrawlData> CrawlIndex;
+	public PrimaryIndex <String, CrawlData> CrawlIndex;
 	Environment env;
 	EnvironmentConfig envConfig;
 	StoreConfig storeConfig;
