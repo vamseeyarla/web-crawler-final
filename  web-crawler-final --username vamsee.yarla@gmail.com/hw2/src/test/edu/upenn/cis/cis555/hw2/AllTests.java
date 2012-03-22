@@ -10,6 +10,7 @@ public class AllTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(XPathEngineTest.class);
 		suite.addTestSuite(HttpClientTest.class);
+		suite.addTestSuite(DBTests.class);
 		
 		//$JUnit-END$
 		return suite;
