@@ -1074,18 +1074,23 @@ public class XPathServlet extends HttpServlet{
 		}
 		
 		String s=null;
+		int count=0;
 		for(String s1: crawlData.crawling.servers.keySet())
 		{
-			s=s1;
-			break;
+			if(Integer.parseInt(crawlData.crawling.servers.get(s1))>count)
+			{
+				count=Integer.parseInt(crawlData.crawling.servers.get(s1));
+				s=s1;
+			}
 		}
 		
 		out.println("<tr>");
-		out.println("<td>The servers which is maximum matches visited: </td>");
+		out.println("<td>The servers which is maximum XML matches visited: </td>");
 		out.println("<td><b>"+s+"</b></td>");
 		out.println("</tr>");
 			
 		
+		out.println("<tr><td>** Channel data contains duplicates</td></tr>");
 		out.println("</table>");
 		out.println("</body>");
 		out.println("</html>");
