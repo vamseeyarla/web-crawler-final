@@ -9,6 +9,10 @@ import java.util.ArrayList;
  * @author VamseeKYarlagadda
  *
  */
+/*
+ * URL Frontier will store all the URLs to be parsed by the crawler and retrives them one by one and gives it to the crawler.
+ * It also performs the check whether the URl has already been parsed or not.
+ */
 public class URLFrontier {
 public ArrayList<String> urls;
 

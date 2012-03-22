@@ -28,11 +28,19 @@ public class DB {
 	StoreConfig storeConfig;
     static DB db=null;
 	
+    /*
+     * Contrcutor to take DB directory as input
+     */
 	public DB(String Directory)
 	{
 		this.Directory=Directory;			
 	}
 	
+	 /*
+     * Function which takes Directory as input and returns the object of 
+     * this class. this ensures only one instance of the 
+     * object has been created.
+     */
 	public static DB getInstance(String Directory)
 	{
 		if(db==null)
@@ -48,6 +56,10 @@ public class DB {
 		return db;	
 	}
 	
+	/*
+	 * Initializes the fields required for opening the DB and makes sure
+	 * everything is working perfectly or not. If not it returns false
+	 */
 	public boolean init()
 	{
 		File dir = new File(Directory);
@@ -127,7 +139,12 @@ public class DB {
 	
 
 	
-	
+	/*
+	 * Function to check whther the given user exists in the system or not. 
+	 * If exists, returns true.otherwise false
+	 * It helps in creating new logins
+	 * 
+	 */
 	public boolean checkUserExists(String Username)
 	{
 		if(db.UserIndex.get(Username)!=null)
@@ -143,6 +160,11 @@ public class DB {
 		
 		}
 	
+	/*
+	 * Function to autogenerate a number for the next channel ID and using this vaue
+	 * the CHannelData class can actually save the data Uniquely.
+	 * 
+	 */
 	public String nextChannelID()
 	{
 		EntityCursor<ChannelData> channeldata= db.ChannelIndex.entities();
@@ -165,6 +187,13 @@ public class DB {
 		return String.valueOf(Max+1);
 	}
 	
+	/*
+	 * Function to take Name, Username, password as input and saves it accrodingly in the database.
+	 * The checking for existing username is already done by previous methods. 
+	 * This gets activated only when everything is unique.
+	 * 
+	 * 
+	 */
 	public boolean addUser(String Username, String Password, String Name)
 	{
 	try{
@@ -186,6 +215,11 @@ public class DB {
 		}
 	}
 	
+	/*
+	 * Function to add a channel to the DB. It populates the object of Channed
+	 * Data with data like Xpaths, Name, ID and saves it in the DB.
+	 * 
+	 */
 	
 	public boolean addChannel(ChannelData data)
 	{
@@ -203,6 +237,13 @@ public class DB {
 			return false;
 		}
 	}
+	
+	
+	/*
+	 * Function to check if the user exists in the ystem or not
+	 * if so, returns an object of UserData with complete info about the users
+	 * 
+	 */
 	
 	public UserData login(String Username, String Password)
 	{
@@ -223,6 +264,12 @@ public class DB {
 			}
 	}
 	
+	/*
+	 * Function to delete a channel from DB if a user has requested to do so.
+	 * It deletes the channel along with their XPaths and commits the DB
+	 * 
+	 */
+	
 	public boolean deleteChannel(String ID)
 	{
 		//System.out.println(db.ChannelIndex.get(ID).Name);
@@ -233,6 +280,13 @@ public class DB {
 		}
 		return false;
 	}
+	
+	/*
+	 * Updates the UserData object when the crawl has been done and or if any new channel was 
+	 * inserted by the user.
+	 * It helps in keeping track of user channels and data.
+	 * 
+	 */
 	
 	public boolean updateData(UserData data)
 	{
@@ -245,13 +299,21 @@ public class DB {
 		
 	}
 	
-	
+	/*
+	 * Function to close the DB by committing everything.
+	 * 
+	 */
 	public void close()
 	{
 		env.sync();
 		DBClose closingHook=new DBClose(env, storeUserDetails,storeChannels,storeCrawl);
 		closingHook.start();
 	}
+	
+	/*
+	 * Function to delete entire data from the database.
+	 * 
+	 */
 	
 	public boolean deleteData()
 	{
@@ -269,7 +331,7 @@ public class DB {
 			CrawlIndex.delete(d.URL);
 			}
 		env.sync();
-		
+		System.out.println("DELETED ALL DATA FROM DB");
 		return true;
 		}
 		catch(Exception e)
@@ -278,7 +340,11 @@ public class DB {
 		}
 	}
 	
-	
+	/*
+	 * Function to delete crawled data from the database.
+	 * Employed by the method called by the admin programmer
+	 * 
+	 */
 	public boolean deleteCrawlData()
 	{
 		try{
@@ -296,6 +362,11 @@ public class DB {
 		}
 	}
 	
+	/*
+	 * Function to update the values in the DB. The correspoding XPaths and all
+	 * the matching URLs with it.
+	 * 
+	 */
 	public boolean updateValues(HashMap<String,ArrayList<String>> XPaths)
 	{
 		//System.out.println(XPaths);
@@ -314,12 +385,21 @@ public class DB {
 		return true;
 	}
 	
-	
+	/*
+	 * Function to retrieve ChannelData using the identifier ID.
+	 * Returns an ChannelData object out.
+	 * 
+	 */
 	public ChannelData getChannelData(String ID)
 	{
 		return ChannelIndex.get(ID);
 	}
 	
+	/*
+	 * Function to update crawled data in the DB. updated in the crawl index
+	 * It also save the timestamp of the document at which it was retrived.
+	 * 
+	 */
 	public boolean updateCrawlData(String URL, long Time,String Data)
 	{
 		try{
@@ -337,6 +417,11 @@ public class DB {
 		}
 	}
 	
+	/*
+	 * Function to check whether the URL has been crawled before
+	 * or not. If so, retrives the data of it rather than fetchcing it agian form the browser. 
+	 * 
+	 */
 	public boolean checkURLCrawled(String URL)
 	{
 	    
@@ -352,6 +437,10 @@ public class DB {
 		}
 	}
 	
+	/*
+	 * Function to returve the timestamp of the URL. Used for IF-mOdified-Since header
+	 * 
+	 */
 	public String getURLTimestamp(String URL)
 	{
 		if(CrawlIndex.get(URL)!=null)
@@ -366,6 +455,9 @@ public class DB {
 		}
 		}
 
+	/*
+	 * Function to retrieve the crawled data from the DB if it has already been crawled.
+	 */
 	public String getCrawledURLData(String URL)
 	{
 		

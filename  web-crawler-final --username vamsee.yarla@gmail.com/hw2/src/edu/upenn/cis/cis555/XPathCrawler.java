@@ -156,12 +156,7 @@ public class XPathCrawler {
 		
 		start=false;
 		
-		System.out.println("/////////////////////////////////////");
-		
-		for(CrawlData data: db.CrawlIndex.entities())
-		{
-			System.out.println(data.URL);
-		}
+
 		
 		
 		

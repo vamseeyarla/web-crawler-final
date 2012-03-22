@@ -7,6 +7,11 @@ package edu.upenn.cis.cis555;
  * @author VamseeKYarlagadda
  *
  */
+/*
+ * Thread class to ivoke the URLCrawler class when called upon the ADMIN using remotely.
+ * We require thread as the crawling is to be separate from existing thread running.Only then we can stop
+ * and control the process going on.
+ */
 public class InvokeCrawler extends Thread {
 
 	String[] args;
