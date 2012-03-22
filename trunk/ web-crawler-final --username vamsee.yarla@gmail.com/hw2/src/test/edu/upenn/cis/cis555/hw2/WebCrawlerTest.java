@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.omg.CORBA.Current;
 
 import edu.upenn.cis.cis555.ChannelData;
+import edu.upenn.cis.cis555.CrawlData;
 import edu.upenn.cis.cis555.DB;
 import edu.upenn.cis.cis555.HttpClient;
 import edu.upenn.cis.cis555.UserData;
@@ -79,8 +80,13 @@ public class WebCrawlerTest extends TestCase {
 		xpaths[3]="2";
 		XPathCrawler.main(xpaths);
 		 
+		int count=0;
+		for(CrawlData datca: db.CrawlIndex.entities())
+		{
+			count++;
+		}
 	
-		assertEquals(true, db.checkURLCrawled("http://crawltest.cis.upenn.edu/"));
+		assertEquals(true, (count <= 2));
 	}
 		
 }
