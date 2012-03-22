@@ -1033,6 +1033,18 @@ public class XPathServlet extends HttpServlet{
 		
 		out.println("<table>");
 		
+		
+		out.println("<tr>");
+		out.println("<td><form action=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\" method=\"POST\" ></td>");
+		out.println("<td><input type=\"hidden\" name=\"status\" value=\"LOGIN\" ></td>");
+		out.println("<td><input type=\"hidden\" name=\"username\" value=\"admin\" ></td>");
+		out.println("<td><input type=\"hidden\" name=\"password\" value=\"adminadmin\" ></td>");
+		out.println("<td><input type=\"submit\" value=\"Back to HomePage\"></td>");
+		out.println("<td></form></td>");
+		
+	//	out.println("<td><a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"\"></a></td>");
+		out.println("</tr>");
+		
 		out.println("<tr>");
 		out.println("<td><h2>Crawl Statistics: </h2></td>");
 		out.println("</tr>");
@@ -1083,7 +1095,7 @@ public class XPathServlet extends HttpServlet{
 				s=s1;
 			}
 		}
-		
+		System.out.println(crawlData.crawling.servers);
 		out.println("<tr>");
 		out.println("<td>The servers which is maximum XML matches visited: </td>");
 		out.println("<td><b>"+s+"</b></td>");
