@@ -15,6 +15,14 @@ import com.sleepycat.persist.model.PrimaryKey;
  * @author VamseeKYarlagadda
  *
  */
+
+/*
+ * Entity to save all the crawled data: from their Timestamp at which the
+ * server fetched the data and also the Hash value of the complete message for future reference.
+ * and also the key URL which is a unique for every address being parsed.
+ * 
+ */
+
 @Entity
 public class CrawlData {
 

@@ -10,6 +10,10 @@ import com.sleepycat.persist.EntityStore;
  * @author VamseeKYarlagadda
  *
  */
+/*
+ * Class to commit all the database transactions and close all it repositories.
+ * 
+ */
 public class DBClose extends Thread {
 
 	private Environment env;

@@ -9,6 +9,15 @@ import java.security.MessageDigest;
  * @author VamseeKYarlagadda
  *
  */
+
+/*
+ * Content Seen test to check whether the fetched data has already been 
+ * in the Crawled data or not. Returns a boolean type and all the checking s done with
+ * the help of the SHA-1 message digest. 
+ * It returns a 160 bit key and checked for matching with already present data.
+ * 
+ */
+
 public class ContentSeenTest {
 
 	public static boolean  isContentSeen(String content,String Directory)

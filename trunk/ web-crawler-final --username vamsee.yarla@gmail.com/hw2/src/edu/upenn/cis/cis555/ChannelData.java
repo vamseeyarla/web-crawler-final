@@ -13,6 +13,13 @@ import com.sleepycat.persist.model.PrimaryKey;
  * @author VamseeKYarlagadda
  *
  */
+
+/*
+ * Entity to save all the channel data: from their URL, Name, Xpaths and
+ * also the matching with their URLs in an HashMap and identifies by an ID which is a
+ * an auto increment number.
+ * 
+ */
 @Entity
 public class ChannelData {
 
