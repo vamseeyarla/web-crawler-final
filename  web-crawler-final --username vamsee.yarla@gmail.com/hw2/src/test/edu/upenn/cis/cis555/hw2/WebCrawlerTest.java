@@ -80,7 +80,7 @@ public class WebCrawlerTest extends TestCase {
 		XPathCrawler.main(xpaths);
 		 
 	
-		assertEquals(true, db.checkURLCrawled("http://crawltest.cis.upenn.edu/bbc/"));
+		assertEquals(true, db.checkURLCrawled("http://crawltest.cis.upenn.edu/"));
 	}
 		
 }
