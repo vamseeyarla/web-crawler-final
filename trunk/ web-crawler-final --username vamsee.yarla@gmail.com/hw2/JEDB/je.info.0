@@ -1,0 +1,57 @@
+120321 18:31:31:802 SEVERE [JEDB]checkpointId=993
+com.sleepycat.je.ThreadInterruptedException: (JE 4.1.7) JEDB Channel closed, may be due to thread interrupt THREAD_INTERRUPTED: InterruptedException may cause incorrect internal state, unable to continue. Environment is invalid and must be closed.
+	at com.sleepycat.je.log.FileManager$LogEndFileDescriptor.force(FileManager.java:2681)
+	at com.sleepycat.je.log.FileManager$LogEndFileDescriptor.access$500(FileManager.java:2351)
+	at com.sleepycat.je.log.FileManager.syncLogEnd(FileManager.java:1713)
+	at com.sleepycat.je.log.FSyncManager.executeFSync(FSyncManager.java:275)
+	at com.sleepycat.je.log.FSyncManager.fsync(FSyncManager.java:226)
+	at com.sleepycat.je.log.FileManager.groupSync(FileManager.java:1740)
+	at com.sleepycat.je.log.LogManager.multiLog(LogManager.java:421)
+	at com.sleepycat.je.log.LogManager.log(LogManager.java:328)
+	at com.sleepycat.je.log.LogManager.log(LogManager.java:317)
+	at com.sleepycat.je.log.LogManager.logForceFlush(LogManager.java:170)
+	at com.sleepycat.je.recovery.Checkpointer.doCheckpoint(Checkpointer.java:557)
+	at com.sleepycat.je.dbi.EnvironmentImpl.invokeCheckpoint(EnvironmentImpl.java:1816)
+	at com.sleepycat.je.Environment.sync(Environment.java:1472)
+	at edu.upenn.cis.cis555.DB.updateCrawlData(DB.java:313)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:156)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.XPathCrawler.runCrawler(XPathCrawler.java:145)
+	at edu.upenn.cis.cis555.InvokeCrawler.run(InvokeCrawler.java:35)
+Caused by: java.nio.channels.ClosedByInterruptException
+	at java.nio.channels.spi.AbstractInterruptibleChannel.end(Unknown Source)
+	at sun.nio.ch.FileChannelImpl.force(Unknown Source)
+	at com.sleepycat.je.log.FileManager$LogEndFileDescriptor.force(FileManager.java:2672)
+	... 17 more
+
+120321 18:35:33:258 SEVERE [JEDB]checkpointId=1068
+com.sleepycat.je.ThreadInterruptedException: (JE 4.1.7) JEDB Channel closed, may be due to thread interrupt THREAD_INTERRUPTED: InterruptedException may cause incorrect internal state, unable to continue. Environment is invalid and must be closed.
+	at com.sleepycat.je.log.FileManager$LogEndFileDescriptor.force(FileManager.java:2681)
+	at com.sleepycat.je.log.FileManager$LogEndFileDescriptor.access$500(FileManager.java:2351)
+	at com.sleepycat.je.log.FileManager.syncLogEnd(FileManager.java:1713)
+	at com.sleepycat.je.log.FSyncManager.executeFSync(FSyncManager.java:275)
+	at com.sleepycat.je.log.FSyncManager.fsync(FSyncManager.java:226)
+	at com.sleepycat.je.log.FileManager.groupSync(FileManager.java:1740)
+	at com.sleepycat.je.log.LogManager.multiLog(LogManager.java:421)
+	at com.sleepycat.je.log.LogManager.log(LogManager.java:328)
+	at com.sleepycat.je.log.LogManager.log(LogManager.java:317)
+	at com.sleepycat.je.log.LogManager.logForceFlush(LogManager.java:170)
+	at com.sleepycat.je.recovery.Checkpointer.doCheckpoint(Checkpointer.java:557)
+	at com.sleepycat.je.dbi.EnvironmentImpl.invokeCheckpoint(EnvironmentImpl.java:1816)
+	at com.sleepycat.je.Environment.sync(Environment.java:1472)
+	at edu.upenn.cis.cis555.DB.getURLTimestamp(DB.java:346)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:70)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.StartCrawl.URLCrawl(StartCrawl.java:289)
+	at edu.upenn.cis.cis555.XPathCrawler.runCrawler(XPathCrawler.java:145)
+	at edu.upenn.cis.cis555.InvokeCrawler.run(InvokeCrawler.java:35)
+Caused by: java.nio.channels.ClosedByInterruptException
+	at java.nio.channels.spi.AbstractInterruptibleChannel.end(Unknown Source)
+	at sun.nio.ch.FileChannelImpl.force(Unknown Source)
+	at com.sleepycat.je.log.FileManager$LogEndFileDescriptor.force(FileManager.java:2672)
+	... 22 more
+
