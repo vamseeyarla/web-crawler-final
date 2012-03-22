@@ -138,7 +138,7 @@ public class XPathServlet extends HttpServlet{
 			response.setContentType("text/xml");
 			
 			out.println("<?xml version=\"1.0\" encoding=\"UTF-16\"?>");
-			//out.println("<?xml-stylesheet type=\"text/xsl\" href=\""+data.URL+"\"?>");
+			out.println("<?xml-stylesheet type=\"text/xsl\" href=\""+data.URL+"\"?>");
 			
 			
 			out.println("<documentcollection>");
@@ -223,6 +223,7 @@ public class XPathServlet extends HttpServlet{
 		 */
 		else if(request.getParameter("status").equalsIgnoreCase("STARTCRAWL"))
 		{
+			
 			boolean status=true;
 			String[] args;
 			 if(request.getParameter("URL2CRAWL").trim().equalsIgnoreCase("") || request.getParameter("SIZE2CRAWL").trim().equalsIgnoreCase(""))
@@ -1088,7 +1089,7 @@ public class XPathServlet extends HttpServlet{
 		out.println("</table>");
 		out.println("</body>");
 		out.println("</html>");
-		
+		XPathCrawler.crawler=null;
 		
 	}
 	
