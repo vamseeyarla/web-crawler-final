@@ -161,11 +161,14 @@ public class XPathEngine {
 			//System..out.println("PROB IN CREATEDOM 5");
 			tidy.setTidyMark(false);
 			tidy.setShowWarnings(false);
+			tidy.setMakeClean(true);
 			//System..out.println(stream.toString());
 			docHead=tidy.parseDOM(stream, System.out);
+		
 			}
 			catch(Exception e)
 			{
+				//System.out.println("I AM HERE");
 				//ERROR IN PARSING HTML
 			}
 			return docHead;
