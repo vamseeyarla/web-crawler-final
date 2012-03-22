@@ -381,7 +381,7 @@ public ByteArrayOutputStream fetchData()
 						
 					}
 					
-					if(contentType!=null && contentLength!=null)
+					if(contentType!=null)
 					{
 					    if(contentType.indexOf("Content-Type:")!=-1)
 					    {
@@ -403,7 +403,7 @@ public ByteArrayOutputStream fetchData()
 					*/
 					else if(type.indexOf("html")!=-1 || type.indexOf("HTML")!=-1)
 					{
-						//System.out.println("VA1");
+						//System.out.println("ENTEREDVA1");
 						ConType="HTML";
 						
 					}
@@ -417,6 +417,9 @@ public ByteArrayOutputStream fetchData()
 					}
 					
 					    }
+					    
+					    if(contentLength!=null)
+					    {
 					    if(contentLength.indexOf("Content-Length:")!=-1)
 					    {
 					    	String length=contentLength.substring(contentLength.indexOf(":")+1,contentLength.length()).trim();
@@ -436,6 +439,7 @@ public ByteArrayOutputStream fetchData()
 								//System.out.println("CONTENT LENGTH: "+ConLength);
 								//System.out.println("PASSED CONTENT LENGTH");
 							}
+					    }
 					    }
 					}
 					else
