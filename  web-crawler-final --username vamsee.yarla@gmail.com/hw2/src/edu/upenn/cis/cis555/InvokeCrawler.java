@@ -34,7 +34,7 @@ public class InvokeCrawler extends Thread {
 		}
 		else
 		{
-				
+			XPathCrawler.crawler=null;
 			running=true;
 			XPathCrawler.crawler=new XPathCrawler();
 			crawlObj=XPathCrawler.crawler;
