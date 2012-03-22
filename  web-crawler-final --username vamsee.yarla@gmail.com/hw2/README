@@ -5,17 +5,40 @@ Description of features implemented:
 HttpClient-- Class that takes URL and fetches the data for local system or from internet accordingly
 XPathEngine--Class that processes the XPaths and evaluates them against the document provided to check whether they confront to the supplied file or not.
 XPathServlet-Class that displays user the content to take inputs and also to display the results of the XPathEngine PRocess and also calls various classes for proper execution.
+ChannelData--Class to store all the Channel Details
+ContentSeenTest--Class to check whether the data has already been seen or not; using SHA-1
+CrawlData--Class that saves the CrawlData of the crawler
+DB--Class that has interfaces to connect to DB
+DBClose--Class that closes all the DB connections
+delete--Class that has capacity to delete all data from DB
+InvokeCrawler--Class that has capability to start the crawler as an Admin
+StartCrawl--Class that has capability to start crawling the web pages and parsing them properly.
+URLFrontier--Class that stores all the unparsed URLs and checks it one by one
+UserData-Class that saves the UserData.
+XPathCrawler--Class that starts the procedure for starting crawler; takes multiple inputs from user
 XPathEngineTest-- Class used for testing XPathEngine against JUnit tests
 HttpClientTest-- Class used for testing HttpClient against JUnit tests
 AllTests-- Class used to invoke all the test classes.
 
 Extra credits claimed:
-  None
+6.4: Crawler Web Interface:  UserId:"admin"; Password:"adminadmin"
+6.1: Implementation of URL Frontier and Content-Seen-Test
 
 List of source files included (consider using `find src | grep java`)
   src/edu/upenn/cis/cis555/HttpClient.java
   src/edu/upenn/cis/cis555/XPathEngine.java
   src/edu/upenn/cis/cis555/XPathServlet.java
+  src/edu/upenn/cis/cis555/ChannelData
+  src/edu/upenn/cis/cis555/ContentSeenTest
+  src/edu/upenn/cis/cis555/CrawlData
+  src/edu/upenn/cis/cis555/DB
+  src/edu/upenn/cis/cis555/DBClose
+  src/edu/upenn/cis/cis555/delete
+  src/edu/upenn/cis/cis555/InvokeCrawler
+  src/edu/upenn/cis/cis555/StartCrawl
+  src/edu/upenn/cis/cis555/URLFrontier
+  src/edu/upenn/cis/cis555/UserData
+  src/edu/upenn/cis/cis555/XPathCrawler
   src/test/edu/upenn/cis/cis555/hw2/AllTests.java
   src/test/edu/upenn/cis/cis555/hw2/HttpClientTest.java
   src/test/edu/upenn/cis/cis555/hw2/XPathEngineTest.java
