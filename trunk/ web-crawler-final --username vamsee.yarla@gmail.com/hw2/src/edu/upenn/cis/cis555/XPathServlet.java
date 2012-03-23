@@ -143,7 +143,7 @@ public class XPathServlet extends HttpServlet{
 			
 			out.println("<documentcollection>");
 			
-			ArrayList<String> result=new ArrayList<String>();
+			Hashtable<String,String> result=new Hashtable<String,String>();
 			
 			for(String xpath: data.XPaths.keySet())
 			{
@@ -170,17 +170,24 @@ public class XPathServlet extends HttpServlet{
 					}
 					//CrawlIndex.get(data.XPaths.get(xpath).get(i));
 					
-					if(!result.contains("crawled=\""+time+"\" location=\""+data.XPaths.get(xpath).get(i)+"\""))
+					if(!result.containsKey("crawled=\""+time+"\" location=\""+data.XPaths.get(xpath).get(i)+"\""))
 					{
-					result.add("crawled=\""+time+"\" location=\""+data.XPaths.get(xpath).get(i)+"\"");
+						
+					result.put("crawled=\""+time+"\" location=\""+data.XPaths.get(xpath).get(i)+"\"",db.getCrawledURLData(data.XPaths.get(xpath).get(i)));
 					}
 				}
 			}
 			
-			for(int i=0;i<result.size();i++)
+			for(String s: result.keySet())
 			{
-				out.println("<document "+result.get(i)+">");
+				out.println("<document "+s+">");
 				//out.println();
+				String output=result.get(s);
+				while(output.indexOf("?>")!=-1)
+				{
+				output=output.substring(output.indexOf("?>")+2);
+				}
+				out.println(output);
 				out.println("</document>");
 			}
 			
