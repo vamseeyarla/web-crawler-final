@@ -953,6 +953,9 @@ public class XPathServlet extends HttpServlet{
 			out.println("<h1>CRAWLING!!</h1>");
 			out.println("<a href=\"http://localhost:"+request.getServerPort()+request.getRequestURI()+"?status=STOPCRAWL\">STOP CRAWL and DISPLAY REPORT</a> ");
 			
+			
+			out.println("</br></br>");
+			out.println("The admin has to stop it manually!");
 			out.println("</body>");
 			out.println("</html>");
 		}
