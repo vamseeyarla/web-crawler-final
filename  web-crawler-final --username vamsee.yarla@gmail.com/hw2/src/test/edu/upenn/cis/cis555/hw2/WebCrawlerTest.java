@@ -72,6 +72,8 @@ public class WebCrawlerTest extends TestCase {
 		tempx.add("1");
 		datax.Channels=tempx;
 		db.updateData(datax);
+		db.deleteCrawlData();
+		
 		
 		xpaths=new String[4];
 		xpaths[0]="http://crawltest.cis.upenn.edu/";
